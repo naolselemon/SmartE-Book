@@ -51,6 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onTap: _onItemTapped,
         items:[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
         ],

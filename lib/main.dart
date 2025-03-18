@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:smart_ebook/presentation/screens/dashboard_page.dart';
 
+import 'package:smart_ebook/presentation/screens/authentication_pages/signin.dart';
+import 'package:smart_ebook/presentation/screens/authentication_pages/signup.dart';
+import 'package:smart_ebook/presentation/screens/authentication_pages/splash_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,14 +15,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.deepPurple,
-        textTheme: GoogleFonts.poppinsTextTheme(),
-      ),
-      home: DashboardScreen(),
+      home: const SplashPage(),
+      routes: {
+        'signup': (context) => const SignUp(),
+        'signin': (context) => const SignIn(),
+      },
     );
   }
 }
-
-
 
