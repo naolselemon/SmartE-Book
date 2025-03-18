@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:smart_ebook/presentation/screens/searchs/landing_page.dart';
+
+import 'package:smart_ebook/presentation/screens/authentication_pages/signin.dart';
+import 'package:smart_ebook/presentation/screens/authentication_pages/signup.dart';
+import 'package:smart_ebook/presentation/screens/authentication_pages/splash_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,18 +11,17 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'E-Book',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color.fromARGB(255, 157, 131, 210),
-        ),
-      ),
 
-      home: LandingPageScreens(),
+      debugShowCheckedModeBanner: false,
+      home: const SplashPage(),
+      routes: {
+        'signup': (context) => const SignUp(),
+        'signin': (context) => const SignIn(),
+      },
+
     );
   }
 }
