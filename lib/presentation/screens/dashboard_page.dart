@@ -59,7 +59,10 @@ class DashboardPage extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Explore'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
         ],
       ),
     );
@@ -70,7 +73,11 @@ class SectionTitle extends StatelessWidget {
   final String title;
   final bool showViewAll;
 
-  const SectionTitle({super.key, required this.title, this.showViewAll = false});
+  const SectionTitle({
+    super.key,
+    required this.title,
+    this.showViewAll = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +86,17 @@ class SectionTitle extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           if (showViewAll)
             TextButton(
               onPressed: () {},
-              child: const Text('View All', style: TextStyle(color: Colors.deepPurple)),
+              child: const Text(
+                'View All',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
             ),
         ],
       ),
