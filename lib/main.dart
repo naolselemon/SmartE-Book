@@ -5,7 +5,7 @@ import 'package:smart_ebook/presentation/screens/authentication_pages/signup.dar
 import 'package:smart_ebook/presentation/screens/authentication_pages/splash_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -25,3 +25,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
