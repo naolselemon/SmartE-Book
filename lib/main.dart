@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:smart_ebook/presentation/screens/authentication_pages/signin.dart';
-import 'package:smart_ebook/presentation/screens/authentication_pages/signup.dart';
 import 'package:smart_ebook/presentation/screens/authentication_pages/splash_page.dart';
 
 void main() {
@@ -14,15 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       debugShowCheckedModeBanner: false,
       home: const SplashPage(),
-      routes: {
-        'signup': (context) => const SignUp(),
-        'signin': (context) => const SignIn(),
-      },
-
     );
   }
 }
-

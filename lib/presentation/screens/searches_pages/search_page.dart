@@ -1,19 +1,19 @@
 import "package:flutter/material.dart";
 
 import "package:smart_ebook/data/sources/books.dart";
-import "package:smart_ebook/presentation/widgets/authors_images.dart";
-import "package:smart_ebook/presentation/widgets/book_coverpage.dart";
-import "package:smart_ebook/presentation/widgets/categories_card.dart";
+import "package:smart_ebook/presentation/widgets/searches_widgets/authors_images.dart";
+import "package:smart_ebook/presentation/widgets/searches_widgets/book_coverpage.dart";
+import "package:smart_ebook/presentation/widgets/searches_widgets/categories_card.dart";
 import "package:smart_ebook/data/models/book_model.dart";
 
-class LandingPageScreens extends StatefulWidget {
-  const LandingPageScreens({super.key});
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
   @override
-  State<LandingPageScreens> createState() => LandingPageScreensState();
+  State<SearchScreen> createState() => LandingPageScreensState();
 }
 
-class LandingPageScreensState extends State<LandingPageScreens> {
+class LandingPageScreensState extends State<SearchScreen> {
   final _searchController = TextEditingController();
   List<Book> filteredBooks = [];
 
@@ -68,96 +68,109 @@ class LandingPageScreensState extends State<LandingPageScreens> {
         child: SafeArea(
           child: Stack(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
-                  const SizedBox(height: 25),
-                  SearchBar(
-                    controller: _searchController,
-                    hintText: 'Search books...',
-                    leading: Icon(Icons.search),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7),
-                      ),
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.arrow_back_ios_new),
                     ),
-                    backgroundColor: WidgetStateProperty.all(
-                      Theme.of(context).colorScheme.inversePrimary,
-                    ),
-                    surfaceTintColor: WidgetStateProperty.all(
-                      Colors.transparent,
-                    ),
-                    elevation: WidgetStateProperty.all(0),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Categories",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                    const SizedBox(height: 10),
+                    SearchBar(
+                      controller: _searchController,
+                      hintText: 'Search books...',
+                      leading: Icon(Icons.search),
+                      shape: WidgetStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7),
                         ),
                       ),
-                      const SizedBox(height: 5),
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
+                      backgroundColor: WidgetStateProperty.all(
+                        Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                      surfaceTintColor: WidgetStateProperty.all(
+                        Colors.transparent,
+                      ),
+                      elevation: WidgetStateProperty.all(0),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Categories",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children:
+                              books.map((book) {
+                                return CategoriesCard(
+                                  text: book.category,
+                                  onCategoryClicked:
+                                      (category) => _filteredCategory(category),
+                                );
+                              }).toList(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    const Text(
+                      "Famous Authors",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Wrap(
+                        spacing: 5,
+                        runSpacing: 5,
                         children:
                             books.map((book) {
-                              return CategoriesCard(
-                                text: book.category,
-                                onCategoryClicked:
-                                    (category) => _filteredCategory(category),
+                              return AuthorsImages(
+                                image: book.authorImage,
+                                name: book.author,
                               );
                             }).toList(),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-
-                  const Text(
-                    "Famous Authors",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  const SizedBox(height: 5),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Wrap(
-                      spacing: 5,
-                      runSpacing: 5,
-                      children:
-                          books.map((book) {
-                            return AuthorsImages(
-                              image: book.authorImage,
-                              name: book.author,
-                            );
-                          }).toList(),
                     ),
-                  ),
 
-                  const SizedBox(height: 25),
-                  const Text(
-                    "Trending Books",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  const SizedBox(height: 5),
-
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children:
-                          getTrendingBooks(books).map((book) {
-                            return BookCoverpage(image: book.coverImage);
-                          }).toList(),
+                    const SizedBox(height: 10),
+                    const Text(
+                      "Trending Books",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children:
+                            getTrendingBooks(books).map((book) {
+                              return BookCoverpage(image: book.coverImage);
+                            }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               if (_searchController.text.isNotEmpty ||
                   filteredBooks.isNotEmpty) ...[

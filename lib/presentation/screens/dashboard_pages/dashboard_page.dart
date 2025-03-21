@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
+
 import 'drawerComponent/library.dart';
 import 'drawerpage.dart';
-import 'explorePage.dart';
 import 'homepage.dart';
-
+import 'package:smart_ebook/presentation/screens/searches_pages/search_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  State<DashboardScreen> createState() {
+    return _DashboardScreenState();
+  }
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    HomePage(),
-    ExplorePage(),
-    LibraryPage(),
-  ];
+  final List<Widget> _pages = [HomePage(), SearchScreen(), LibraryPage()];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -32,28 +30,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
-        title:Text('ReadLink', style: TextStyle(color: Colors.white)),
+        title: Text('ReadLink', style: TextStyle(color: Colors.white)),
         actions: [
           Padding(
-            padding:EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundImage:AssetImage('assets/images/profile_picture.jpg'),
+              backgroundImage: AssetImage('assets/images/profile_picture.jpg'),
               radius: 16,
             ),
           ),
         ],
       ),
-      drawer:DrawerPage(),
+      drawer: DrawerPage(),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.deepPurple,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items:[
+        items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
 
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Library'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Library',
+          ),
         ],
       ),
     );

@@ -4,10 +4,10 @@ import 'package:audioplayers/audioplayers.dart';
 class AudioPlayerWidget extends StatefulWidget {
   final String localAudioPath;
 
-  const AudioPlayerWidget({Key? key, required this.localAudioPath}) : super(key: key);
+  const AudioPlayerWidget({super.key, required this.localAudioPath});
 
   @override
-  _AudioPlayerWidgetState createState() => _AudioPlayerWidgetState();
+  State<AudioPlayerWidget> createState() => _AudioPlayerWidgetState();
 }
 
 class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
@@ -59,21 +59,32 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       children: [
         Slider(
           value: currentPosition.inSeconds.toDouble(),
-          max: totalDuration.inSeconds.toDouble() > 0 ? totalDuration.inSeconds.toDouble() : 1,
+          max:
+              totalDuration.inSeconds.toDouble() > 0
+                  ? totalDuration.inSeconds.toDouble()
+                  : 1,
           onChanged: _seekToPosition,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("${currentPosition.inMinutes}:${(currentPosition.inSeconds % 60).toString().padLeft(2, '0')}"),
-            Text("${totalDuration.inMinutes}:${(totalDuration.inSeconds % 60).toString().padLeft(2, '0')}"),
+            Text(
+              "${currentPosition.inMinutes}:${(currentPosition.inSeconds % 60).toString().padLeft(2, '0')}",
+            ),
+            Text(
+              "${totalDuration.inMinutes}:${(totalDuration.inSeconds % 60).toString().padLeft(2, '0')}",
+            ),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow, size: 40, color: Colors.purple),
+              icon: Icon(
+                isPlaying ? Icons.pause : Icons.play_arrow,
+                size: 40,
+                color: Colors.purple,
+              ),
               onPressed: _togglePlayPause,
             ),
           ],

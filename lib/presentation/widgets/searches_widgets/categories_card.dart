@@ -26,7 +26,7 @@ class CategoriesCard extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Text(text),
       ),
     );

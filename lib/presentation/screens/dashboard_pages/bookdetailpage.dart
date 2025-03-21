@@ -56,20 +56,32 @@ class BookDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: 5),
-                  Text("by $author", style: TextStyle(fontSize: 16, color: Colors.grey)),
+                  Text(
+                    "by $author",
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
                   Row(
                     children: [
                       Icon(Icons.star, color: Colors.orange, size: 20),
                       SizedBox(width: 5),
-                      Text("$rating", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        "$rating",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       SizedBox(width: 5),
                       Text("($reviews Reviews)"),
                     ],
                   ),
                   SizedBox(height: 10),
-                  Text("Summary", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    "Summary",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: 5),
                   Text(summary),
                 ],
@@ -95,16 +107,18 @@ class BookDetailPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AudioPlayScreen(
-                            title: title,
-                            author: author,
-                            imagePath: imagePath,
-                            localAudioPath:"assets/audio/ChaAtomicHabits.wav",
-                          ),
+                          builder:
+                              (context) => AudioPlayScreen(
+                                title: title,
+                                author: author,
+                                imagePath: imagePath,
+                                localAudioPath:
+                                    "assets/audio/ChaAtomicHabits.wav",
+                              ),
                         ),
                       );
-                    } ,
-                    icon: Icon(Icons.headphones, color:Colors.deepPurple),
+                    },
+                    icon: Icon(Icons.headphones, color: Colors.deepPurple),
                     label: Text("Listening"),
                   ),
                 ],

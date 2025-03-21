@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_ebook/presentation/screens/authentication_pages/signin.dart';
+import 'package:smart_ebook/presentation/screens/authentication_pages/signup.dart';
 
 void main() {
   runApp(const SplashPage());
@@ -28,18 +30,27 @@ class SplashPage extends StatelessWidget {
                       height: 48,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromRGBO(157, 131, 210, 1)),
+                          backgroundColor: const Color.fromRGBO(
+                            157,
+                            131,
+                            210,
+                            1,
+                          ),
+                        ),
                         onPressed: () {
-                          Navigator.pushNamed(context, 'signup');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => SignUp()),
+                          );
                         },
                         child: const Text(
                           "Get Started",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'poppins'),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'poppins',
+                          ),
                         ),
                       ),
                     ),
@@ -47,25 +58,30 @@ class SplashPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 41, top: 12),
                     child: SizedBox(
-                        width: 300,
-                        height: 48,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromRGBO(51, 14, 126, 1)),
-                          onPressed: () {
-                            Navigator.pushNamed(context, 'signin');
-                          },
-                          child: const Text(
-                            "I have an account",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'poppins'),
+                      width: 300,
+                      height: 48,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(51, 14, 126, 1),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => SignIn()),
+                          );
+                        },
+                        child: const Text(
+                          "I have an account",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'poppins',
                           ),
-                        )),
-                  )
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],

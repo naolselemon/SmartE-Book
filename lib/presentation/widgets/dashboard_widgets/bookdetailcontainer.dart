@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/bookdetailpage.dart';
+import '../../screens/dashboard_pages/bookdetailpage.dart';
 
 class BookDetailContainer extends StatelessWidget {
   final String imagePath;
@@ -26,20 +26,21 @@ class BookDetailContainer extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BookDetailPage(
-              title: title,
-              author: author,
-              imagePath: imagePath,
-              rating: rating,
-              reviews: reviews,
-              summary: summary,
-            ),
+            builder:
+                (context) => BookDetailPage(
+                  title: title,
+                  author: author,
+                  imagePath: imagePath,
+                  rating: rating,
+                  reviews: reviews,
+                  summary: summary,
+                ),
           ),
         );
       },
       child: Container(
         width: 120,
-        padding:EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.deepPurple.shade200,
           borderRadius: BorderRadius.circular(12),
@@ -53,7 +54,7 @@ class BookDetailContainer extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.asset(imagePath,fit: BoxFit.cover),
+          child: Image.asset(imagePath, fit: BoxFit.cover),
         ),
       ),
     );

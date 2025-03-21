@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_ebook/presentation/screens/authentication_pages/app_bar.dart';
-import 'package:smart_ebook/presentation/screens/authentication_pages/text_field.dart';
+import 'package:smart_ebook/presentation/screens/dashboard_pages/dashboard_page.dart';
+import 'package:smart_ebook/presentation/widgets/authentication_widgets/text_field.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
@@ -46,7 +47,11 @@ class SignUp extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (ctx) => DashboardScreen()),
+                    );
+                  },
                   child: const Text(
                     "Sign Up",
                     style: TextStyle(

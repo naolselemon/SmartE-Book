@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/bookdetailcontainer.dart';
-import '../widgets/sectiontitle.dart';
+import '../../widgets/dashboard_widgets/bookdetailcontainer.dart';
+import '../../widgets/dashboard_widgets/sectiontitle.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -8,7 +8,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -18,14 +18,15 @@ class HomePage extends StatelessWidget {
               height: 180,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children:[
+                children: [
                   BookDetailContainer(
                     imagePath: 'assets/images/book1.png',
                     title: 'Atomic Habits',
                     author: 'James Clear',
                     rating: 4.9,
                     reviews: 180,
-                    summary: 'A practical guide on how to change your habits and get 1% better every day.',
+                    summary:
+                        'A practical guide on how to change your habits and get 1% better every day.',
                   ),
                   SizedBox(width: 10),
                   BookDetailContainer(
@@ -62,7 +63,7 @@ class HomePage extends StatelessWidget {
               height: 180,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children:[
+                children: [
                   BookDetailContainer(
                     imagePath: 'assets/images/book5.png',
                     title: 'Sapiens',
@@ -87,7 +88,8 @@ class HomePage extends StatelessWidget {
                     author: 'Mark Manson',
                     rating: 4.7,
                     reviews: 300,
-                    summary: 'A counterintuitive approach to living a good life.',
+                    summary:
+                        'A counterintuitive approach to living a good life.',
                   ),
                   SizedBox(width: 10),
                   BookDetailContainer(
@@ -105,7 +107,7 @@ class HomePage extends StatelessWidget {
             SizedBox(
               height: 180,
               child: ListView(
-                scrollDirection:Axis.horizontal,
+                scrollDirection: Axis.horizontal,
                 children: [
                   BookDetailContainer(
                     imagePath: 'assets/images/book9.png',
@@ -113,40 +115,43 @@ class HomePage extends StatelessWidget {
                     author: 'Harper Lee',
                     rating: 4.8,
                     reviews: 300,
-                    summary: 'A classic novel exploring racial injustice and moral growth in the American South.',
+                    summary:
+                        'A classic novel exploring racial injustice and moral growth in the American South.',
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   BookDetailContainer(
                     imagePath: 'assets/images/book10.png',
                     title: '1984',
                     author: 'George Orwell',
                     rating: 4.7,
                     reviews: 280,
-                    summary: 'A dystopian novel about totalitarianism, surveillance, and individuality.',
+                    summary:
+                        'A dystopian novel about totalitarianism, surveillance, and individuality.',
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   BookDetailContainer(
                     imagePath: 'assets/images/book11.png',
                     title: 'The Great Gatsby',
                     author: 'F. Scott Fitzgerald',
                     rating: 4.6,
                     reviews: 270,
-                    summary: 'A tale of love, ambition, and the American Dream in the Roaring Twenties.',
+                    summary:
+                        'A tale of love, ambition, and the American Dream in the Roaring Twenties.',
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   BookDetailContainer(
                     imagePath: 'assets/images/book12.png',
                     title: 'Pride and Prejudice',
                     author: 'Jane Austen',
                     rating: 4.8,
                     reviews: 320,
-                    summary: 'A timeless romance and social commentary set in 19th-century England.',
+                    summary:
+                        'A timeless romance and social commentary set in 19th-century England.',
                   ),
                 ],
               ),
-
             ),
-            SectionTitle(title:"New",showViewAll: true,),
+            SectionTitle(title: "New", showViewAll: true),
             SizedBox(
               height: 180,
               child: ListView(
@@ -158,32 +163,35 @@ class HomePage extends StatelessWidget {
                     author: 'Yuval Noah Harari',
                     rating: 4.9,
                     reviews: 250,
-                    summary: 'Explores the history of humanity from the Stone Age to the modern era.',
+                    summary:
+                        'Explores the history of humanity from the Stone Age to the modern era.',
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   BookDetailContainer(
                     imagePath: 'assets/images/book14.png',
                     title: 'Becoming',
                     author: 'Michelle Obama',
                     rating: 4.8,
                     reviews: 400,
-                    summary: 'A memoir by the former First Lady of the United States, sharing her personal and professional journey.',
+                    summary:
+                        'A memoir by the former First Lady of the United States, sharing her personal and professional journey.',
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   BookDetailContainer(
                     imagePath: 'assets/images/book15.png',
                     title: 'The Diary of a Young Girl',
                     author: 'Anne Frank',
                     rating: 4.9,
                     reviews: 500,
-                    summary: 'A poignant account of a Jewish girl’s life in hiding during World War II.',
+                    summary:
+                        'A poignant account of a Jewish girl’s life in hiding during World War II.',
                   ),
                 ],
               ),
             ),
             SectionTitle(title: "Free"),
             SizedBox(
-              height:180 ,
+              height: 180,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
@@ -193,7 +201,8 @@ class HomePage extends StatelessWidget {
                     author: 'J.R.R. Tolkien',
                     rating: 4.9,
                     reviews: 600,
-                    summary: 'An epic fantasy trilogy about the quest to destroy a powerful ring and save Middle-earth.',
+                    summary:
+                        'An epic fantasy trilogy about the quest to destroy a powerful ring and save Middle-earth.',
                   ),
                   SizedBox(width: 10),
                   BookDetailContainer(
@@ -202,27 +211,29 @@ class HomePage extends StatelessWidget {
                     author: 'Frank Herbert',
                     rating: 4.7,
                     reviews: 450,
-                    summary: 'A science fiction masterpiece set in a distant future with political intrigue and desert planets.',
+                    summary:
+                        'A science fiction masterpiece set in a distant future with political intrigue and desert planets.',
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   BookDetailContainer(
                     imagePath: 'assets/images/book18.png',
                     title: 'The Night Circus',
                     author: 'Erin Morgenstern',
                     rating: 4.6,
                     reviews: 300,
-                    summary: 'A magical story about a mysterious circus and a competition between two young illusionists.',
+                    summary:
+                        'A magical story about a mysterious circus and a competition between two young illusionists.',
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   BookDetailContainer(
                     imagePath: 'assets/images/book19.png',
                     title: 'Where the Crawdads Sing',
                     author: 'Delia Owens',
                     rating: 4.8,
                     reviews: 400,
-                    summary: 'A blend of mystery, romance, and nature, following the life of a girl raised in the marshes of North Carolina.',
+                    summary:
+                        'A blend of mystery, romance, and nature, following the life of a girl raised in the marshes of North Carolina.',
                   ),
-
                 ],
               ),
             ),

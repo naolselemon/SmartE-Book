@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/audioplayerwidget.dart';
+import '../../widgets/dashboard_widgets/audioplayerwidget.dart';
 
 class AudioPlayScreen extends StatelessWidget {
   final String title;
@@ -8,12 +8,12 @@ class AudioPlayScreen extends StatelessWidget {
   final String localAudioPath;
 
   const AudioPlayScreen({
-    Key? key,
+    super.key,
     required this.title,
     required this.author,
     required this.imagePath,
     required this.localAudioPath,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +34,7 @@ class AudioPlayScreen extends StatelessWidget {
               width: 180,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(color: Colors.black26, blurRadius: 10),
-                ],
+                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
               ),
               child: Image.asset(imagePath, height: 200),
             ),
@@ -49,8 +47,14 @@ class AudioPlayScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text(author, style: TextStyle(fontSize: 14, color: Colors.grey)),
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    author,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
                   AudioPlayerWidget(localAudioPath: localAudioPath),
                 ],
               ),

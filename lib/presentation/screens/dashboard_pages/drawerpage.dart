@@ -20,9 +20,7 @@ class DrawerPage extends StatelessWidget {
             currentAccountPicture: CircleAvatar(
               backgroundImage: AssetImage('assets/images/profile_picture.jpg'),
             ),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple,
-            ),
+            decoration: BoxDecoration(color: Colors.deepPurple),
           ),
           // Menu Items
           ListTile(
@@ -88,7 +86,6 @@ class DrawerPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => LibraryPage()),
               );
-
             },
           ),
         ],
