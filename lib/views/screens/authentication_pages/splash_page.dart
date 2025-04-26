@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smart_ebook/presentation/screens/authentication_pages/signin.dart';
-import 'package:smart_ebook/presentation/screens/authentication_pages/signup.dart';
+import 'package:smart_ebook/views/screens/authentication_pages/signin.dart';
+import 'package:smart_ebook/views/screens/authentication_pages/signup.dart';
 
 void main() {
   runApp(const SplashPage());
@@ -40,7 +40,7 @@ class SplashPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (ctx) => SignUp()),
+                            MaterialPageRoute(builder: (ctx) => SignUpScreen()),
                           );
                         },
                         child: const Text(

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'drawerComponent/library.dart';
 import 'drawerpage.dart';
 import 'homepage.dart';
-import 'package:smart_ebook/presentation/screens/searches_pages/search_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -17,7 +16,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [HomePage(), SearchScreen(), LibraryPage()];
+  final List<Widget> _pages = [HomePage(), LibraryPage()]; // SearchPage()];
 
   void _onItemTapped(int index) {
     setState(() {

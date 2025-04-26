@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:smart_ebook/presentation/screens/authentication_pages/app_bar.dart';
-import 'package:smart_ebook/presentation/screens/dashboard_pages/dashboard_page.dart';
-import 'package:smart_ebook/presentation/widgets/authentication_widgets/text_field.dart';
 
-class SignUp extends StatelessWidget {
-  const SignUp({super.key});
+import 'package:smart_ebook/views/screens/authentication_pages/app_bar.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/dashboard_page.dart';
+
+class SignIn extends StatelessWidget {
+  const SignIn({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class SignUp extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: 25),
               child: Text(
-                "Create New Account",
+                "Sign In",
                 style: TextStyle(
                   fontFamily: 'poppins',
                   fontWeight: FontWeight.w600,
@@ -28,11 +28,8 @@ class SignUp extends StatelessWidget {
                 ),
               ),
             ),
-            const CustomTextField("Full name"),
-            const CustomTextField("Username"),
-            const CustomTextField("Email"),
-            const CustomTextField("Password"),
-            const CustomTextField("Confirm Password"),
+            // const CustomTextField("Username"),
+            // const CustomTextField("Password"),
             Padding(
               padding: const EdgeInsets.only(
                 top: 25,
@@ -48,7 +45,8 @@ class SignUp extends StatelessWidget {
                     backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
                   ),
                   onPressed: () {
-                    Navigator.of(context).push(
+                    Navigator.push(
+                      context,
                       MaterialPageRoute(builder: (ctx) => DashboardScreen()),
                     );
                   },
