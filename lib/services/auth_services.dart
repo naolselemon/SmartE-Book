@@ -24,17 +24,45 @@ class AuthServices {
         email: email,
         password: password,
       );
+      final documentData = {'userId': user.$id, 'name': name, 'email': email};
+
+      print('Creating document with data: $documentData');
 
       await _databases.createDocument(
-        databaseId: dotenv.env["DATABASE_ID"]!,
-        collectionId: dotenv.env["USER_COLLECTION_ID"]!,
+        databaseId: dotenv.env['DATABASE_ID']!,
+        collectionId: dotenv.env['USER_COLLECTION_ID']!,
         documentId: user.$id,
-        data: {name: name, email: email, password: password},
+        data: documentData,
       );
 
-      return User(id: user.$id, name: name, email: email, password: password);
+      return User(
+        id: user.$id,
+        name: user.name,
+        email: user.email,
+        password: password,
+      );
     } catch (e) {
       throw Exception("Failed to sign up: $e");
+    }
+  }
+
+  Future<User> signIn(String email, String password) async {
+    try {
+      await _account.createEmailPasswordSession(
+        email: email,
+        password: password,
+      );
+
+      final user = await _account.get();
+
+      return User(
+        id: user.$id,
+        name: user.name,
+        email: user.email,
+        password: password,
+      );
+    } catch (e) {
+      throw Exception("Failed to sign in: $e");
     }
   }
 }

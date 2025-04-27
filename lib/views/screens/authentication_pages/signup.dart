@@ -62,9 +62,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       await _viewModel.signUp(
+        _nameController.text,
         _emailController.text,
         _passwordController.text,
-        _nameController.text,
       );
 
       if (!mounted) {
@@ -81,7 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SignIn()),
+          MaterialPageRoute(builder: (context) => SignIn()),
         );
       }
     } catch (e) {
