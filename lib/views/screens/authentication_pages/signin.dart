@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/view_models/auth_view_model.dart';
+import 'package:smart_ebook/views/providers/user_provider.dart';
 
 import 'package:smart_ebook/views/screens/authentication_pages/app_bar.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/dashboard_page.dart';
 import 'package:smart_ebook/views/widgets/authentication_widgets/password_textfield.dart';
 import 'package:smart_ebook/views/widgets/authentication_widgets/text_field.dart';
 
-class SignIn extends StatefulWidget {
+class SignIn extends ConsumerStatefulWidget {
   const SignIn({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  ConsumerState<SignIn> createState() => _SignInState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInState extends ConsumerState<SignIn> {
   final _emailController = TextEditingController();
 
   final _passwordController = TextEditingController();
@@ -70,18 +72,30 @@ class _SignInState extends State<SignIn> {
     });
 
     try {
+      //check if the user is already signed in
+      if (await _authViewModel.isUserSignedIn()) {
+        if (!mounted) {
+          return;
+        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (ctx) => const DashboardScreen()),
+        );
+        return;
+      }
+
+      // Sign in the user
       await _authViewModel.signIn(
         _emailController.text,
         _passwordController.text,
       );
 
-      if (!mounted) {
-        return;
-      }
-
       if (!_hasNavigated) {
         _hasNavigated = true;
 
+        if (!mounted) {
+          return;
+        }
         _clearForm();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Center(child: Text('Sign-in successful!'))),
@@ -108,103 +122,123 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(35, 8, 90, 1),
-      appBar: const CustomAppBar(),
-      body: Container(
-        padding: const EdgeInsets.only(left: 16, right: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: 25),
-              child: Text(
-                "Sign In",
-                style: TextStyle(
-                  fontFamily: 'poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            CustomTextField(hint: "Email", controller: _emailController),
-            PasswordTextfield(
-              hint: "Password",
-              controller: _passwordController,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 25,
-                bottom: 45,
-                right: 16,
-                left: 16,
-              ),
-              child: SizedBox(
-                width: 328,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
-                  ),
-                  onPressed: _validateAndSignIn,
-                  child:
-                      _isLoading
-                          ? CircularProgressIndicator()
-                          : Text(
-                            "Sign Up",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'poppins',
-                            ),
-                          ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 108, left: 108),
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.,
-                children: [
-                  const Text(
-                    "or Sign up with",
+    // Check if the user is already signed in
+    return FutureBuilder(
+      future: ref.watch(profileProvider.notifier).isUserSignedIn(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Error checking sign-in status'));
+        } else if (snapshot.data == true) {
+          // User is already signed in, navigate to the dashboard
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (ctx) => const DashboardScreen()),
+            );
+          });
+        }
+
+        return Scaffold(
+          backgroundColor: const Color.fromRGBO(35, 8, 90, 1),
+          appBar: const CustomAppBar(),
+          body: Container(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 25),
+                  child: Text(
+                    "Sign In",
                     style: TextStyle(
-                      letterSpacing: 0.15,
-                      fontWeight: FontWeight.w500,
                       fontFamily: 'poppins',
-                      color: Color.fromRGBO(236, 227, 255, 1),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: Colors.white,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(0),
-                            ),
-                            child: Image.asset(
-                              'assets/images/google.png',
-                              height: 40,
-                              width: 40,
-                            ),
-                          ),
+                ),
+                CustomTextField(hint: "Email", controller: _emailController),
+                PasswordTextfield(
+                  hint: "Password",
+                  controller: _passwordController,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 25,
+                    bottom: 45,
+                    right: 16,
+                    left: 16,
+                  ),
+                  child: SizedBox(
+                    width: 328,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
+                      ),
+                      onPressed: _validateAndSignIn,
+                      child:
+                          _isLoading
+                              ? CircularProgressIndicator()
+                              : Text(
+                                "Sign Up",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'poppins',
+                                ),
+                              ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 108, left: 108),
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.,
+                    children: [
+                      const Text(
+                        "or Sign up with",
+                        style: TextStyle(
+                          letterSpacing: 0.15,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'poppins',
+                          color: Color.fromRGBO(236, 227, 255, 1),
                         ),
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(0),
+                                ),
+                                child: Image.asset(
+                                  'assets/images/google.png',
+                                  height: 40,
+                                  width: 40,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,19 +1,31 @@
+import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_ebook/views/providers/user_provider.dart';
 
 import 'drawerComponent/library.dart';
 import 'drawerpage.dart';
 import 'homepage.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() {
+  ConsumerState<DashboardScreen> createState() {
     return _DashboardScreenState();
   }
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch user data after the widget tree is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(profileProvider.notifier).fetchUser();
+    });
+  }
+
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [HomePage(), LibraryPage()]; // SearchPage()];
@@ -26,15 +38,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profile = ref.watch(profileProvider);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
-        title: Text('ReadLink', style: TextStyle(color: Colors.white)),
+        title: Center(
+          child: Text('ReadLink', style: TextStyle(color: Colors.white)),
+        ),
         actions: [
           Padding(
             padding: EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/profile_picture.jpg'),
+              backgroundImage:
+                  profile.user?.profileImageUrl != null
+                      ? NetworkImage(profile.user!.profileImageUrl!)
+                      : AssetImage('assets/images/default_profile.jpg'),
               radius: 16,
             ),
           ),

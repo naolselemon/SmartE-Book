@@ -1,10 +1,10 @@
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
-import "../services/auth_services.dart";
+import "../services/appwrite_services.dart";
 
 @riverpod
 class AuthViewModel {
-  final AuthServices _authServices = AuthServices();
+  final AppwriteServices _authServices = AppwriteServices();
 
   Future<void> signUp(String name, String email, String password) async {
     try {
@@ -20,5 +20,10 @@ class AuthViewModel {
     } catch (e) {
       throw Exception("Failed to sign in: $e");
     }
+  }
+
+  //check if user is logged in
+  Future<bool> isUserSignedIn() {
+    return _authServices.isUserSignedIn();
   }
 }

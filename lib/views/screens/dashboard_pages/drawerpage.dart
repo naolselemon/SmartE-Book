@@ -1,91 +1,71 @@
 import 'package:flutter/material.dart';
-import 'drawerComponent/library.dart';
-import 'drawerComponent/logout.dart';
-import 'drawerComponent/paymentMethods.dart';
-import 'drawerComponent/profile.dart';
-import 'drawerComponent/settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DrawerPage extends StatelessWidget {
+import 'package:smart_ebook/views/screens/authentication_pages/signin.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/profile.dart';
+import 'package:smart_ebook/views/providers/user_provider.dart';
+
+class DrawerPage extends ConsumerWidget {
   const DrawerPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          UserAccountsDrawerHeader(
-            accountName: Text("Dagim Amoghehegn"),
-            accountEmail: Text("dagimamognehegn@gmail.com"),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/profile_picture.jpg'),
-            ),
+          const DrawerHeader(
             decoration: BoxDecoration(color: Colors.deepPurple),
+            child: Text(
+              'ReadLink',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontFamily: 'poppins',
+              ),
+            ),
           ),
-          // Menu Items
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text("Home"),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text("Profile"),
-            trailing: Icon(Icons.check, color: Colors.green),
+            leading: const Icon(Icons.library_books),
+            title: const Text('Library'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text("Settings"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.payment),
-            title: Text("Payment Methods"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PaymentMethodsPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.logout),
-            title: Text("Logout"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LogoutPage()),
-              );
-            },
-          ),
-          Divider(),
-          // Library Section
-          ListTile(
-            leading: Icon(Icons.library_books),
-            title: Text("Library"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LibraryPage()),
-              );
+            leading: const Icon(Icons.logout),
+            title: const Text('Sign Out'),
+            onTap: () async {
+              try {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Signing out...')));
+                await ref.read(profileProvider.notifier).signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignIn()),
+                );
+              } catch (e) {
+                print('Error signing out: $e');
+              }
             },
           ),
         ],

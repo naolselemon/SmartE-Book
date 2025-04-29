@@ -2,12 +2,14 @@ class User {
   final String id;
   final String name;
   final String email;
-  late String password;
+  final String? password;
+  final String? profileImageUrl;
 
   User({
     required this.id,
     required this.name,
     required this.email,
-    this.password = "",
+    this.password,
+    this.profileImageUrl,
   });
 }
