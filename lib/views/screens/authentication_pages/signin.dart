@@ -129,7 +129,7 @@ class _SignInState extends ConsumerState<SignIn> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error checking sign-in status'));
+          print('Sign-in status error: ${snapshot.error}');
         } else if (snapshot.data == true) {
           // User is already signed in, navigate to the dashboard
           WidgetsBinding.instance.addPostFrameCallback((_) {

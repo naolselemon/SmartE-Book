@@ -53,10 +53,10 @@ class AppwriteServices {
 
   Future<User> signIn(String email, String password) async {
     try {
-      // // Only delete current session to avoid clearing other devices
-      // await _account.deleteSession(sessionId: 'current').catchError((e) {
-      //   print('No current session to delete: $e');
-      // });
+      // Only delete current session to avoid clearing other devices
+      await _account.deleteSession(sessionId: 'current').catchError((e) {
+        print('No current session to delete: $e');
+      });
 
       await _account.createEmailPasswordSession(
         email: email,
@@ -203,20 +203,19 @@ class AppwriteServices {
   }
 
   //check if user is logged in
-  Future<bool> isUserSignedIn() {
+  Future<bool> isUserSignedIn() async {
     try {
-      return _account
-          .getSession(sessionId: "current")
-          .then((session) => session != null);
+      await _account.get();
+      return true;
     } catch (e) {
-      return Future.value(false);
+      return false;
     }
   }
 
   //sign out
   Future<void> signOut() async {
     try {
-      await _account.deleteSession(sessionId: "current");
+      await _account.deleteSessions();
     } catch (e) {
       print("Error signing out: $e");
       throw Exception("Failed to sign out: $e");

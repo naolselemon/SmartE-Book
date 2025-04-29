@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/screens/authentication_pages/signin.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/profile.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/settings.dart';
 
 class DrawerPage extends ConsumerWidget {
   const DrawerPage({super.key});
@@ -50,6 +51,19 @@ class DrawerPage extends ConsumerWidget {
               );
             },
           ),
+
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+          ),
+
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Sign Out'),

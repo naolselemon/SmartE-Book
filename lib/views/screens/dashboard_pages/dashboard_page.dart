@@ -1,4 +1,3 @@
-import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
@@ -53,7 +52,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               backgroundImage:
                   profile.user?.profileImageUrl != null
                       ? NetworkImage(profile.user!.profileImageUrl!)
-                      : AssetImage('assets/images/default_profile.jpg'),
+                      : AssetImage('assets/images/profile_picture.jpg'),
               radius: 16,
             ),
           ),
