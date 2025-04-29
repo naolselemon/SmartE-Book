@@ -76,7 +76,6 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     }
   }
 
-  // Check if the user is signed in
   Future<bool> isUserSignedIn() async {
     return await _appwriteServices.isUserSignedIn();
   }

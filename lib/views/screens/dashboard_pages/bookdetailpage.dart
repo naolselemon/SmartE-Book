@@ -25,12 +25,11 @@ class BookDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
-              color: Colors.deepPurple,
+              color: Color.fromRGBO(35, 8, 90, 1),
               padding: EdgeInsets.only(top: 40, bottom: 20),
               child: Column(
                 children: [

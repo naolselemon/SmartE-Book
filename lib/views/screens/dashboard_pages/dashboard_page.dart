@@ -41,7 +41,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: const Color.fromARGB(35, 8, 90, 1),
         title: Center(
           child: Text('ReadLink', style: TextStyle(color: Colors.white)),
         ),

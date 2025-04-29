@@ -17,35 +17,30 @@ class SettingsState {
 }
 
 class SettingsNotifier extends StateNotifier<SettingsState> {
-  static const _localKey = 'locale';
+  static const _localeKey = 'locale';
   static const _themeKey = 'themeMode';
 
   SettingsNotifier()
     : super(
-        SettingsState(locale: const Locale('en'), themeMode: ThemeMode.system),
+        SettingsState(locale: const Locale('en'), themeMode: ThemeMode.dark),
       ) {
     _loadSettings();
   }
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    final localCode = prefs.getString(_localKey) ?? 'en';
-    final themeCode = prefs.getString(_themeKey) ?? 'system';
+    final localeCode = prefs.getString(_localeKey) ?? 'en';
+    final themeCode = prefs.getString(_themeKey) ?? 'dark';
 
     state = state.copyWith(
-      locale: Locale(localCode),
-      themeMode:
-          themeCode == 'light'
-              ? ThemeMode.light
-              : themeCode == 'dark'
-              ? ThemeMode.dark
-              : ThemeMode.system,
+      locale: Locale(localeCode),
+      themeMode: themeCode == 'light' ? ThemeMode.light : ThemeMode.dark,
     );
   }
 
   Future<void> setLocale(Locale locale) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_localKey, locale.languageCode);
+    await prefs.setString(_localeKey, locale.languageCode);
     state = state.copyWith(locale: locale);
   }
 
@@ -53,15 +48,14 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       _themeKey,
-      themeMode == ThemeMode.light
-          ? 'light'
-          : themeMode == ThemeMode.dark
-          ? 'dark'
-          : 'system',
+      themeMode == ThemeMode.light ? 'light' : 'dark',
     );
+    state = state.copyWith(themeMode: themeMode);
   }
 }
 
-final settingsProvider = StateNotifierProvider((ref) {
-  return SettingsNotifier();
-});
+final settingsProvider = StateNotifierProvider<SettingsNotifier, SettingsState>(
+  (ref) {
+    return SettingsNotifier();
+  },
+);

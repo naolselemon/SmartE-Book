@@ -15,8 +15,10 @@ class DrawerPage extends ConsumerWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.deepPurple),
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(35, 8, 90, 1),
+            ),
             child: Text(
               'ReadLink',
               style: TextStyle(

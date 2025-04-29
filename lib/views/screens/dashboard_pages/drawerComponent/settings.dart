@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:smart_ebook/views/providers/settings_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:smart_ebook/views/providers/settings_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -15,10 +14,13 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
         title: Text(
           localizations.settingsTitle,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontFamily: 'poppins',
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: Padding(
@@ -32,15 +34,40 @@ class SettingsPage extends ConsumerWidget {
                 fontFamily: 'poppins',
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                color: Colors.deepPurple,
               ),
             ),
             const SizedBox(height: 8),
-            DropdownButton<Locale>(
+            DropdownButtonFormField<Locale>(
               value: settingsState.locale,
               isExpanded: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.deepPurple),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+              ),
               items: const [
-                DropdownMenuItem(value: Locale('en'), child: Text('English')),
-                DropdownMenuItem(value: Locale('am'), child: Text('Amharic')),
+                DropdownMenuItem(
+                  value: Locale('en'),
+                  child: Text(
+                    'English',
+                    style: TextStyle(fontFamily: 'poppins'),
+                  ),
+                ),
+                DropdownMenuItem(
+                  value: Locale('am'),
+                  child: Text(
+                    'አማርኛ',
+                    style: TextStyle(fontFamily: 'NotoSansEthiopic'),
+                  ),
+                ),
               ],
               onChanged: (locale) {
                 if (locale != null) {
@@ -55,44 +82,23 @@ class SettingsPage extends ConsumerWidget {
                 fontFamily: 'poppins',
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
+                color: Colors.deepPurple,
               ),
             ),
             const SizedBox(height: 8),
-            ListTile(
-              title: Text(localizations.lightTheme),
-              leading: Radio<ThemeMode>(
-                value: ThemeMode.light,
-                groupValue: settingsState.themeMode,
-                onChanged: (value) {
-                  if (value != null) {
-                    settingsNotifier.setThemeMode(value);
-                  }
-                },
+            SwitchListTile(
+              title: Text(
+                localizations.darkTheme,
+                style: const TextStyle(fontFamily: 'poppins', fontSize: 16),
               ),
-            ),
-            ListTile(
-              title: Text(localizations.darkTheme),
-              leading: Radio<ThemeMode>(
-                value: ThemeMode.dark,
-                groupValue: settingsState.themeMode,
-                onChanged: (value) {
-                  if (value != null) {
-                    settingsNotifier.setThemeMode(value);
-                  }
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text('System'),
-              leading: Radio<ThemeMode>(
-                value: ThemeMode.system,
-                groupValue: settingsState.themeMode,
-                onChanged: (value) {
-                  if (value != null) {
-                    settingsNotifier.setThemeMode(value);
-                  }
-                },
-              ),
+              value: settingsState.themeMode == ThemeMode.dark,
+              activeColor: Colors.deepPurple,
+              onChanged: (value) {
+                settingsNotifier.setThemeMode(
+                  value ? ThemeMode.dark : ThemeMode.light,
+                );
+              },
+              contentPadding: const EdgeInsets.symmetric(horizontal: 0),
             ),
           ],
         ),

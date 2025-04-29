@@ -5,6 +5,7 @@ import "package:flutter_gen/gen_l10n/app_localizations.dart";
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:smart_ebook/l10n/l10n.dart';
+import 'package:smart_ebook/views/app_theme.dart';
 import 'package:smart_ebook/views/providers/settings_provider.dart';
 import 'package:smart_ebook/views/screens/authentication_pages/splash_page.dart';
 
@@ -26,38 +27,15 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       home: const SplashPage(),
       supportedLocales: L10n.all,
+      locale: settingsState.locale,
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        fontFamily: 'poppins',
-        fontFamilyFallback: const ['NotoSansEthiopic'],
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
-        ),
-        textTheme: const TextTheme(
-          bodyMedium: TextStyle(color: Colors.black87),
-        ),
-      ),
-      darkTheme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        fontFamily: 'poppins',
-        fontFamilyFallback: const ['NotoSansEthiopic'],
-        scaffoldBackgroundColor: Colors.grey[900],
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
-        ),
-        textTheme: const TextTheme(
-          bodyMedium: TextStyle(color: Colors.white70),
-        ),
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: settingsState.themeMode,
     );
   }

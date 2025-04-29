@@ -82,7 +82,7 @@ class AppwriteServices {
     }
   }
 
-  Future<User> getCurrentUser() async {
+  Future<User?> getCurrentUser() async {
     try {
       final user = await _account.get();
       final document = await _databases.getDocument(
@@ -98,7 +98,8 @@ class AppwriteServices {
         profileImageUrl: document.data['profileImageUrl'] as String?,
       );
     } catch (e) {
-      throw Exception('No current user: $e');
+      print("Failed to get current user: $e");
+      return null;
     }
   }
 
@@ -215,7 +216,7 @@ class AppwriteServices {
   //sign out
   Future<void> signOut() async {
     try {
-      await _account.deleteSessions();
+      await _account.deleteSession(sessionId: 'current');
     } catch (e) {
       print("Error signing out: $e");
       throw Exception("Failed to sign out: $e");

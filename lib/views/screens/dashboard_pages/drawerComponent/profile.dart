@@ -146,7 +146,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
         title: const Text('Profile', style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
