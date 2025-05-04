@@ -68,8 +68,8 @@ class _BookDetailContainerState extends State<BookDetailContainer>
     final isAmharic = Localizations.localeOf(context).languageCode == 'am';
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      // onEnter: (_) => setState(() => isHovered = true),
+      // onExit: () => setState(() => _isHovered = false),
       child: GestureDetector(
         onTapDown: _onTapDown,
         onTapUp: _onTapUp,
@@ -105,22 +105,21 @@ class _BookDetailContainerState extends State<BookDetailContainer>
                   ),
                 ),
                 child: Container(
-                  width: 160, // Increased for better touch target
-                  height: 280, // Fixed height for consistency
+                  width: 160,
+                  height: 280,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: colorScheme.surface,
                   ),
                   child: Stack(
                     children: [
-                      // Book Cover
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
+                        child: Image.network(
                           widget.imagePath,
                           fit: BoxFit.cover,
                           width: double.infinity,
-                          height: 200, // Cover takes upper 2/3
+                          height: 200,
                           errorBuilder:
                               (context, error, stackTrace) => Container(
                                 color: Colors.grey[300],
@@ -132,7 +131,6 @@ class _BookDetailContainerState extends State<BookDetailContainer>
                               ),
                         ),
                       ),
-                      // 3D Shadow Effect
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
@@ -147,7 +145,6 @@ class _BookDetailContainerState extends State<BookDetailContainer>
                           ),
                         ),
                       ),
-                      // Information Overlay
                       Positioned(
                         bottom: 0,
                         left: 0,
