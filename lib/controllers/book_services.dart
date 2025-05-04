@@ -1,6 +1,8 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:logger/logger.dart';
+import 'package:smart_ebook/controllers/file_download_services.dart';
 import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/models/bookwithrating.dart';
 
@@ -8,18 +10,77 @@ class BookServices {
   final Client _client;
   late Databases _databases;
   late Storage _storage;
+  final FileDownloadService _fileDownloadService;
+  final Logger _logger = Logger();
 
-  BookServices({required Client client})
-    : _client =
-          client
-            ..setEndpoint(dotenv.env['API_ENDPOINT']!)
-            ..setProject(dotenv.env['PROJECT_ID']!)
-            ..setSelfSigned(status: true) {
+  BookServices({
+    required Client client,
+    required FileDownloadService fileDownloadService,
+  }) : _client =
+           client
+             ..setEndpoint(dotenv.env['API_ENDPOINT']!)
+             ..setProject(dotenv.env['PROJECT_ID']!)
+             ..setSelfSigned(status: true),
+       _fileDownloadService = fileDownloadService {
     _databases = Databases(_client);
     _storage = Storage(_client);
   }
 
-  // getting information all user that gave -- logic using AI
+  Future<List<int>> getFileData(String fileId) async {
+    try {
+      return await _storage.getFileDownload(
+        bucketId: dotenv.env['BUCKET_ID']!,
+        fileId: fileId,
+      );
+    } catch (e) {
+      _logger.e('Failed to fetch file data: $e');
+      throw Exception('Failed to fetch file data: $e');
+    }
+  }
+
+  Future<String> downloadFile(
+    String fileId,
+    String bookId,
+    String extension,
+  ) async {
+    try {
+      final fileData = await getFileData(fileId);
+      return await _fileDownloadService.downloadFile(
+        fileData,
+        bookId,
+        extension,
+      );
+    } catch (e) {
+      _logger.e('Failed to download file: $e');
+      throw Exception('Failed to download file: $e');
+    }
+  }
+
+  Future<bool> isFileDownloaded(String bookId, String extension) async {
+    return await _fileDownloadService.isFileDownloaded(bookId, extension);
+  }
+
+  Future<String?> getLocalFilePath(String bookId, String extension) async {
+    return await _fileDownloadService.getLocalFilePath(bookId, extension);
+  }
+
+  Future<List<Book>> getDownloadedBooks() async {
+    try {
+      final books = await getBooks();
+      final downloadedBooks = <Book>[];
+      for (var book in books) {
+        final isPdfDownloaded = await isFileDownloaded(book.bookId, 'pdf');
+        if (isPdfDownloaded) {
+          downloadedBooks.add(book);
+        }
+      }
+      return downloadedBooks;
+    } catch (e) {
+      _logger.e('Failed to fetch downloaded books: $e');
+      return [];
+    }
+  }
+
   Future<Map<String, Map<String, String>>> getUserProfiles(
     List<String> userIds,
   ) async {
@@ -38,7 +99,7 @@ class BookServices {
           },
       };
     } catch (e) {
-      print('Failed to fetch user profiles: $e');
+      _logger.e('Failed to fetch user profiles: $e');
       return {};
     }
   }
@@ -74,7 +135,7 @@ class BookServices {
         );
       }).toList();
     } catch (e) {
-      print('Failed to fetch books with ratings: $e');
+      _logger.e('Failed to fetch books with ratings: $e');
       throw Exception('Failed to fetch books with ratings: $e');
     }
   }
@@ -100,7 +161,7 @@ class BookServices {
         return bwr ?? BookWithRating(book: book, rating: 0.0, reviewCount: 0);
       }).toList();
     } catch (e) {
-      print('Failed to fetch favorite books with ratings: $e');
+      _logger.e('Failed to fetch favorite books with ratings: $e');
       throw Exception('Failed to fetch favorite books with ratings: $e');
     }
   }
@@ -147,7 +208,7 @@ class BookServices {
           .map((doc) => buildBookWithUrls(doc.data))
           .toList();
     } catch (e) {
-      print('Failed to fetch books: $e');
+      _logger.e('Failed to fetch books: $e');
       throw Exception('Failed to fetch books: $e');
     }
   }
@@ -189,7 +250,7 @@ class BookServices {
 
       return books.take(limit).toList();
     } catch (e) {
-      print('Failed to fetch top-rated books: $e');
+      _logger.e('Failed to fetch top-rated books: $e');
       throw Exception('Failed to fetch top-rated books: $e');
     }
   }
@@ -207,7 +268,7 @@ class BookServices {
         },
       );
     } catch (e) {
-      print('Failed to add favorite: $e');
+      _logger.e('Failed to add favorite: $e');
       throw Exception('Failed to add favorite: $e');
     }
   }
@@ -220,7 +281,7 @@ class BookServices {
         documentId: favoriteId,
       );
     } catch (e) {
-      print('Failed to remove favorite: $e');
+      _logger.e('Failed to remove favorite: $e');
       throw Exception('Failed to remove favorite: $e');
     }
   }
@@ -233,7 +294,7 @@ class BookServices {
         queries: [Query.equal('userId', userId)],
       );
     } catch (e) {
-      print('Failed to fetch favorites: $e');
+      _logger.e('Failed to fetch favorites: $e');
       throw Exception('Failed to fetch favorites: $e');
     }
   }
@@ -250,7 +311,7 @@ class BookServices {
       }
       return null;
     } catch (e) {
-      print('Failed to get favorite id: $e');
+      _logger.e('Failed to get favorite id: $e');
       return null;
     }
   }
@@ -275,7 +336,7 @@ class BookServices {
         },
       );
     } catch (e) {
-      print('Failed to add review: $e');
+      _logger.e('Failed to add review: $e');
       throw Exception('Failed to add review: $e');
     }
   }
@@ -288,7 +349,7 @@ class BookServices {
         queries: [Query.equal('bookId', bookId)],
       );
     } catch (e) {
-      print('Failed to fetch reviews: $e');
+      _logger.e('Failed to fetch reviews: $e');
       throw Exception('Failed to fetch reviews: $e');
     }
   }
@@ -309,18 +370,6 @@ class BookServices {
       return {'rating': averageRating, 'reviewCount': reviewCount};
     } catch (e) {
       return {'rating': 0.0, 'reviewCount': 0};
-    }
-  }
-
-  Future<List<int>> getFile(String fileId) async {
-    try {
-      final fileData = await _storage.getFileDownload(
-        bucketId: dotenv.env['BUCKET_ID']!,
-        fileId: fileId,
-      );
-      return fileData.toList();
-    } catch (e) {
-      throw Exception('Failed to download file: $e');
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:smart_ebook/controllers/book_services.dart';
+import 'package:smart_ebook/controllers/file_download_services.dart';
 import 'package:smart_ebook/models/review.dart';
 
 import 'package:smart_ebook/views/providers/user_provider.dart';
@@ -13,10 +14,17 @@ final appwriteClientProvider = Provider<Client>((ref) {
   return userServices.client;
 });
 
+final fileDownloadServiceProvider = Provider<FileDownloadService>((ref) {
+  return FileDownloadService();
+});
+
 // Providers
 final bookServicesProvider = Provider<BookServices>((ref) {
   final client = ref.watch(appwriteClientProvider);
-  return BookServices(client: client);
+  return BookServices(
+    client: client,
+    fileDownloadService: ref.watch(fileDownloadServiceProvider),
+  );
 });
 
 final booksWithRatingProvider = FutureProvider<List<BookWithRating>>((

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/reviewspage.dart';
-import 'audioplaypage.dart';
 
 class BookDetailPage extends ConsumerWidget {
   final String bookId;
@@ -16,6 +14,7 @@ class BookDetailPage extends ConsumerWidget {
   final String summary;
   final String audioId;
   final String audioUrl;
+  final String pdfId;
 
   const BookDetailPage({
     super.key,
@@ -28,6 +27,7 @@ class BookDetailPage extends ConsumerWidget {
     required this.summary,
     required this.audioId,
     required this.audioUrl,
+    required this.pdfId,
   });
 
   @override
@@ -202,8 +202,8 @@ class BookDetailPage extends ConsumerWidget {
                             const SizedBox(height: 10),
                             Text(
                               audioId.isNotEmpty
-                                  ? "Audio Available by the Author"
-                                  : "No Audio Available by the Author",
+                                  ? "Audio Available By The Author"
+                                  : "No Audio Available By The Author",
                               style: TextStyle(
                                 color:
                                     audioId.isNotEmpty
@@ -213,68 +213,94 @@ class BookDetailPage extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            // Reading and Listening buttons
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                              ),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.shade100,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  TextButton.icon(
-                                    onPressed: () {},
-                                    icon: const Icon(
-                                      Icons.menu_book,
-                                      color: Colors.deepPurple,
+                            // Download button
+                            Consumer(
+                              builder: (context, ref, child) {
+                                final bookServices = ref.read(
+                                  bookServicesProvider,
+                                );
+                                return FutureBuilder<List<bool>>(
+                                  future: Future.wait([
+                                    bookServices.isFileDownloaded(
+                                      bookId,
+                                      'pdf',
                                     ),
-                                    label: const Text("Reading"),
-                                  ),
-                                  TextButton.icon(
-                                    onPressed:
-                                        audioId.isNotEmpty
-                                            ? () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (context) =>
-                                                          AudioPlayScreen(
-                                                            title: title,
-                                                            author: author,
-                                                            imagePath:
-                                                                imagePath,
-                                                            localAudioPath:
-                                                                audioUrl,
-                                                          ),
-                                                ),
-                                              );
-                                            }
-                                            : null,
-                                    icon: Icon(
-                                      Icons.headphones,
-                                      color:
-                                          audioId.isNotEmpty
-                                              ? Colors.deepPurple
-                                              : Colors.grey,
+                                    bookServices.isFileDownloaded(
+                                      bookId,
+                                      'mp3',
                                     ),
-                                    label: Text(
-                                      "Listening",
-                                      style: TextStyle(
-                                        color:
-                                            audioId.isNotEmpty
-                                                ? Colors.deepPurple
-                                                : Colors.grey,
+                                  ]),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return ElevatedButton(
+                                        onPressed: null,
+                                        child: const Text("Checking..."),
+                                      );
+                                    }
+                                    final isPdfDownloaded = snapshot.data![0];
+                                    final isAudioDownloaded =
+                                        snapshot.data![1] || audioId.isEmpty;
+                                    final allDownloaded =
+                                        isPdfDownloaded && isAudioDownloaded;
+                                    return ElevatedButton.icon(
+                                      onPressed:
+                                          allDownloaded
+                                              ? null
+                                              : () async {
+                                                try {
+                                                  if (!isPdfDownloaded &&
+                                                      pdfId.isNotEmpty) {
+                                                    await bookServices
+                                                        .downloadFile(
+                                                          pdfId,
+                                                          bookId,
+                                                          'pdf',
+                                                        );
+                                                  }
+                                                  if (!isAudioDownloaded &&
+                                                      audioId.isNotEmpty) {
+                                                    await bookServices
+                                                        .downloadFile(
+                                                          audioId,
+                                                          bookId,
+                                                          'mp3',
+                                                        );
+                                                  }
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        'Download completed',
+                                                      ),
+                                                    ),
+                                                  );
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Download failed: $e',
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                      icon: Icon(
+                                        allDownloaded
+                                            ? Icons.check
+                                            : Icons.download,
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                      label: Text(
+                                        allDownloaded
+                                            ? "Downloaded"
+                                            : "Download",
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),

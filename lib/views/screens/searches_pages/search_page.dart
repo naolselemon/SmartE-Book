@@ -1,10 +1,10 @@
 // import "package:flutter/material.dart";
 
-// import "package:smart_ebook/data/datasources/books.dart";
+
 // import "package:smart_ebook/views/widgets/searches_widgets/authors_images.dart";
 // import "package:smart_ebook/views/widgets/searches_widgets/book_coverpage.dart";
 // import "package:smart_ebook/views/widgets/searches_widgets/categories_card.dart";
-// import "package:smart_ebook/data/models/book_model.dart";
+
 
 // class SearchScreen extends StatefulWidget {
 //   const SearchScreen({super.key});

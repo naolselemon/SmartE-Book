@@ -129,7 +129,11 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          const Text("Add a Review"),
+          Text(
+            "Add a Review",
+            style: GoogleFonts.lato(fontSize: 20, fontStyle: FontStyle.italic),
+          ),
+          const SizedBox(height: 3),
           RatingBar.builder(
             initialRating: _rating,
             minRating: 1,
