@@ -27,7 +27,7 @@ class _BookDetailContainerState extends State<BookDetailContainer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  bool _isHovered = false;
+  final bool _isHovered = false;
 
   @override
   void initState() {
@@ -62,7 +62,6 @@ class _BookDetailContainerState extends State<BookDetailContainer>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final isAmharic = Localizations.localeOf(context).languageCode == 'am';

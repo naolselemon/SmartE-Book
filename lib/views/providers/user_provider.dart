@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:smart_ebook/models/user.dart';
 import 'package:smart_ebook/controllers/user_services.dart';
+import 'package:smart_ebook/views/providers/books_provider.dart';
 
 // This provider is used to manage the state of the user in the app
 // It provides methods to sign up, sign in, and sign out users
@@ -29,9 +29,10 @@ class ProfileState {
 
 // This provider is used to manage the state of the profile
 class ProfileNotifier extends StateNotifier<ProfileState> {
+  final Ref ref;
   final UserServices _userServices;
 
-  ProfileNotifier(this._userServices) : super(ProfileState());
+  ProfileNotifier(this.ref, this._userServices) : super(ProfileState());
 
   // Fetch user data from the server
   Future<void> fetchUser() async {
@@ -70,6 +71,10 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _userServices.signOut();
+      ref.invalidate(booksWithRatingProvider);
+      ref.invalidate(favoriteBooksWithRatingProvider);
+      ref.invalidate(newBooksProvider);
+      ref.invalidate(freeBooksProvider);
       state = state.copyWith(user: null, isLoading: false, error: null);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -81,10 +86,10 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   }
 }
 
-//making the provider available to the app
+// Making the provider available to the app
 final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((
   ref,
 ) {
-  final appwriteServices = ref.watch(userProvider);
-  return ProfileNotifier(appwriteServices);
+  final userServices = ref.watch(userProvider);
+  return ProfileNotifier(ref, userServices);
 });

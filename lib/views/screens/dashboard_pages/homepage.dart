@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:smart_ebook/views/widgets/dashboard_widgets/bookdetailcontainer.dart';
 import 'package:smart_ebook/views/widgets/dashboard_widgets/sectiontitle.dart';
@@ -12,26 +11,45 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Trending Books Section
-            const SectionTitle(title: 'Trending Books'),
-            _buildTrendingBooks(ref),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(booksWithRatingProvider);
+          ref.invalidate(favoriteBooksWithRatingProvider);
+          ref.invalidate(newBooksProvider);
+          ref.invalidate(freeBooksProvider);
+          await Future.wait([
+            ref.read(booksWithRatingProvider.future),
+            ref.read(favoriteBooksWithRatingProvider.future),
+            ref.read(newBooksProvider.future),
+            ref.read(freeBooksProvider.future),
+          ]);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // All Books Section
+              const SectionTitle(title: 'All Books'),
+              _buildAllBooks(ref),
 
-            // Your Favourites Section
-            const SectionTitle(title: 'Your Favourites', showViewAll: true),
-            _buildFavoriteBooks(ref),
+              // New Books Section
+              const SectionTitle(title: 'New', showViewAll: true),
+              _buildNewBooks(ref),
 
-            // New Books Section
-            const SectionTitle(title: 'New', showViewAll: true),
-            _buildNewBooks(ref),
+              // Trending Books Section
+              const SectionTitle(title: 'Trending Books'),
+              _buildTrendingBooks(ref),
 
-            // Free Books Section
-            const SectionTitle(title: 'Free'),
-            _buildFreeBooks(ref),
-          ],
+              // Your Favourites Section
+              const SectionTitle(title: 'Your Favourites', showViewAll: true),
+              _buildFavoriteBooks(ref),
+
+              // Free Books Section
+              const SectionTitle(title: 'Free'),
+              _buildFreeBooks(ref),
+            ],
+          ),
         ),
       ),
     );
@@ -43,10 +61,12 @@ class HomePage extends ConsumerWidget {
       height: 180,
       child: booksWithRatingAsync.when(
         data: (books) {
-          // Sort by review count (trending)
-          final trendingBooks =
-              books..sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-          final displayBooks = trendingBooks.take(4).toList(); // Show top 4
+          final trendingBooks = books.where((b) => b.reviewCount >= 0).toList();
+          if (trendingBooks.isEmpty) {
+            return const Center(child: Text('No trending books available'));
+          }
+          trendingBooks.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+          final displayBooks = trendingBooks.take(4).toList();
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: displayBooks.length,
@@ -114,6 +134,9 @@ class HomePage extends ConsumerWidget {
       height: 180,
       child: newBooksAsync.when(
         data: (books) {
+          if (books.isEmpty) {
+            return const Center(child: Text('No new books available'));
+          }
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: books.length,
@@ -146,11 +169,52 @@ class HomePage extends ConsumerWidget {
       height: 180,
       child: freeBooksAsync.when(
         data: (books) {
+          if (books.isEmpty) {
+            return const Center(child: Text('No free books available'));
+          }
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: books.length,
             itemBuilder: (context, index) {
               final bookWithRating = books[index];
+              final book = bookWithRating.book;
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: BookDetailContainer(
+                  imagePath: book.coverPageUrl,
+                  title: book.title,
+                  author: book.author,
+                  rating: bookWithRating.rating,
+                  reviews: bookWithRating.reviewCount,
+                  summary: book.description,
+                ),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+      ),
+    );
+  }
+
+  Widget _buildAllBooks(WidgetRef ref) {
+    final booksWithRatingAsync = ref.watch(booksWithRatingProvider);
+    return SizedBox(
+      height: 180,
+      child: booksWithRatingAsync.when(
+        data: (books) {
+          if (books.isEmpty) {
+            return const Center(child: Text('No books available'));
+          }
+          // Sort by createdAt descending
+          books.sort((a, b) => b.book.createdAt.compareTo(a.book.createdAt));
+          final displayBooks = books.take(20).toList();
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: displayBooks.length,
+            itemBuilder: (context, index) {
+              final bookWithRating = displayBooks[index];
               final book = bookWithRating.book;
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
