@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:smart_ebook/controllers/book_services.dart';
+import 'package:smart_ebook/models/review.dart';
 
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/models/bookwithrating.dart';
@@ -61,4 +62,29 @@ final freeBooksProvider = FutureProvider<List<BookWithRating>>((ref) async {
     final bwr = booksMap[book.bookId];
     return bwr ?? BookWithRating(book: book, rating: 0.0, reviewCount: 0);
   }).toList();
+});
+
+final reviewsProvider = FutureProvider.family<List<Review>, String>((
+  ref,
+  bookId,
+) async {
+  final bookServices = ref.watch(bookServicesProvider);
+  final reviewsList = await bookServices.getReviews(bookId);
+  return reviewsList.documents
+      .map((doc) => Review.fromDocument(doc.data))
+      .toList();
+});
+
+// Favorite Status Provider
+final favoriteStatusProvider = FutureProvider.family<String?, String>((
+  ref,
+  bookId,
+) async {
+  final profileState = ref.watch(profileProvider);
+  if (profileState.user == null) {
+    return null;
+  }
+  final userId = profileState.user!.id;
+  final bookServices = ref.watch(bookServicesProvider);
+  return await bookServices.getFavoriteId(userId, bookId);
 });

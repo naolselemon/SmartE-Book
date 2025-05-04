@@ -10,6 +10,7 @@ class Book {
   final String coverPageUrl;
   final String fileId;
   final String audioId;
+  final String audioUrl;
   final String authorImageId;
   final String authorImageUrl;
   final String createdAt;
@@ -26,6 +27,7 @@ class Book {
     required this.coverPageUrl,
     required this.fileId,
     required this.audioId,
+    required this.audioUrl,
     required this.authorImageId,
     required this.authorImageUrl,
     required this.createdAt,
@@ -44,6 +46,7 @@ class Book {
       coverPageUrl: doc['coverPageUrl'] ?? '',
       fileId: doc['fileId'] ?? '',
       audioId: doc['audioId'] ?? '',
+      audioUrl: doc['audioUrl'] ?? '',
       authorImageId: doc['authorImageId'] ?? '',
       authorImageUrl: doc['authorImageUrl'] ?? '',
       createdAt: doc['createdAt'] ?? '',
@@ -63,6 +66,7 @@ class Book {
       'coverPageUrl': coverPageUrl,
       'fileId': fileId,
       'audioId': audioId,
+      'audioUrl': audioUrl,
       'authorImageId': authorImageId,
       'authorImageUrl': authorImageUrl,
       'createdAt': createdAt,

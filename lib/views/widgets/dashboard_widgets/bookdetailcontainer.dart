@@ -1,33 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../screens/dashboard_pages/bookdetailpage.dart';
 
-class BookDetailContainer extends StatefulWidget {
+class BookDetailContainer extends ConsumerStatefulWidget {
+  final String bookId;
   final String imagePath;
   final String title;
   final String author;
   final double rating;
   final int reviews;
   final String summary;
+  final String audioId;
+  final String audioUrl;
 
   const BookDetailContainer({
     super.key,
+    required this.bookId,
     required this.imagePath,
     this.title = '',
     this.author = '',
     this.rating = 0.0,
     this.reviews = 0,
     this.summary = '',
+    this.audioId = '',
+    this.audioUrl = '',
   });
 
   @override
-  _BookDetailContainerState createState() => _BookDetailContainerState();
+  ConsumerState createState() => _BookDetailContainerState();
 }
 
-class _BookDetailContainerState extends State<BookDetailContainer>
+class _BookDetailContainerState extends ConsumerState<BookDetailContainer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  final bool _isHovered = false;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -67,8 +74,6 @@ class _BookDetailContainerState extends State<BookDetailContainer>
     final isAmharic = Localizations.localeOf(context).languageCode == 'am';
 
     return MouseRegion(
-      // onEnter: (_) => setState(() => isHovered = true),
-      // onExit: () => setState(() => _isHovered = false),
       child: GestureDetector(
         onTapDown: _onTapDown,
         onTapUp: _onTapUp,
@@ -79,12 +84,15 @@ class _BookDetailContainerState extends State<BookDetailContainer>
             MaterialPageRoute(
               builder:
                   (context) => BookDetailPage(
+                    bookId: widget.bookId,
                     title: widget.title,
                     author: widget.author,
                     imagePath: widget.imagePath,
                     rating: widget.rating,
-                    reviews: widget.reviews,
+                    reviewCount: widget.reviews,
                     summary: widget.summary,
+                    audioId: widget.audioId,
+                    audioUrl: widget.audioUrl,
                   ),
             ),
           );

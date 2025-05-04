@@ -19,6 +19,30 @@ class BookServices {
     _storage = Storage(_client);
   }
 
+  // getting information all user that gave -- logic using AI
+  Future<Map<String, Map<String, String>>> getUserProfiles(
+    List<String> userIds,
+  ) async {
+    if (userIds.isEmpty) return {};
+    try {
+      final documents = await _databases.listDocuments(
+        databaseId: dotenv.env['DATABASE_ID']!,
+        collectionId: dotenv.env['USERS_COLLECTION_ID']!,
+        queries: [Query.equal('userId', userIds)],
+      );
+      return {
+        for (var doc in documents.documents)
+          doc.data['userId'] as String: {
+            'name': doc.data['name'] as String? ?? 'Unknown User',
+            'profileImageUrl': doc.data['profileImageUrl'] as String? ?? '',
+          },
+      };
+    } catch (e) {
+      print('Failed to fetch user profiles: $e');
+      return {};
+    }
+  }
+
   Future<List<BookWithRating>> getBooksWithRatings() async {
     try {
       final reviewsList = await _databases.listDocuments(
@@ -81,7 +105,6 @@ class BookServices {
     }
   }
 
-  //fallback to empty list
   Book buildBookWithUrls(Map<String, dynamic> data) {
     if (data['coverPageUrl'] == null || data['coverPageUrl'].isEmpty) {
       final fileId = data['coverPageId'];
@@ -99,6 +122,15 @@ class BookServices {
             '${dotenv.env['API_ENDPOINT']}/v1/storage/buckets/${dotenv.env['BUCKET_ID']}/files/$authorImageId/view?project=${dotenv.env['PROJECT_ID']}';
       } else {
         data['authorImageUrl'] = '';
+      }
+    }
+    if (data['audioUrl'] == null || data['audioUrl'].isEmpty) {
+      final audioId = data['audioId'];
+      if (audioId != null && audioId.isNotEmpty) {
+        data['audioUrl'] =
+            '${dotenv.env['API_ENDPOINT']}/v1/storage/buckets/${dotenv.env['BUCKET_ID']}/files/$audioId/view?project=${dotenv.env['PROJECT_ID']}';
+      } else {
+        data['audioUrl'] = '';
       }
     }
     return Book.fromDocument(data);
@@ -203,6 +235,23 @@ class BookServices {
     } catch (e) {
       print('Failed to fetch favorites: $e');
       throw Exception('Failed to fetch favorites: $e');
+    }
+  }
+
+  Future<String?> getFavoriteId(String userId, String bookId) async {
+    try {
+      final favorites = await _databases.listDocuments(
+        databaseId: dotenv.env['DATABASE_ID']!,
+        collectionId: dotenv.env['FAVORITES_COLLECTION_ID']!,
+        queries: [Query.equal('userId', userId), Query.equal('bookId', bookId)],
+      );
+      if (favorites.documents.isNotEmpty) {
+        return favorites.documents.first.$id;
+      }
+      return null;
+    } catch (e) {
+      print('Failed to get favorite id: $e');
+      return null;
     }
   }
 

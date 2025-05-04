@@ -76,12 +76,15 @@ class HomePage extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: BookDetailContainer(
+                  bookId: book.bookId,
                   imagePath: book.coverPageUrl,
                   title: book.title,
                   author: book.author,
                   rating: bookWithRating.rating,
                   reviews: bookWithRating.reviewCount,
                   summary: book.description,
+                  audioId: book.audioId,
+                  audioUrl: book.audioUrl,
                 ),
               );
             },
@@ -111,12 +114,15 @@ class HomePage extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: BookDetailContainer(
+                  bookId: book.bookId,
                   imagePath: book.coverPageUrl,
                   title: book.title,
                   author: book.author,
                   rating: bookWithRating.rating,
                   reviews: bookWithRating.reviewCount,
                   summary: book.description,
+                  audioId: book.audioId,
+                  audioUrl: book.audioUrl,
                 ),
               );
             },
@@ -146,12 +152,15 @@ class HomePage extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: BookDetailContainer(
+                  bookId: book.bookId,
                   imagePath: book.coverPageUrl,
                   title: book.title,
                   author: book.author,
                   rating: bookWithRating.rating,
                   reviews: bookWithRating.reviewCount,
                   summary: book.description,
+                  audioId: book.audioId,
+                  audioUrl: book.audioUrl,
                 ),
               );
             },
@@ -181,12 +190,15 @@ class HomePage extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: BookDetailContainer(
+                  bookId: book.bookId,
                   imagePath: book.coverPageUrl,
                   title: book.title,
                   author: book.author,
                   rating: bookWithRating.rating,
                   reviews: bookWithRating.reviewCount,
                   summary: book.description,
+                  audioId: book.audioId,
+                  audioUrl: book.audioUrl,
                 ),
               );
             },
@@ -207,7 +219,6 @@ class HomePage extends ConsumerWidget {
           if (books.isEmpty) {
             return const Center(child: Text('No books available'));
           }
-          // Sort by createdAt descending
           books.sort((a, b) => b.book.createdAt.compareTo(a.book.createdAt));
           final displayBooks = books.take(20).toList();
           return ListView.builder(
@@ -219,12 +230,15 @@ class HomePage extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: BookDetailContainer(
+                  bookId: book.bookId,
                   imagePath: book.coverPageUrl,
                   title: book.title,
                   author: book.author,
                   rating: bookWithRating.rating,
                   reviews: bookWithRating.reviewCount,
                   summary: book.description,
+                  audioId: book.audioId,
+                  audioUrl: book.audioUrl,
                 ),
               );
             },
