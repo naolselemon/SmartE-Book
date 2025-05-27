@@ -48,7 +48,7 @@ class LibraryPage extends ConsumerWidget {
                       onPressed: () async {
                         final pdfPath = await ref
                             .read(bookServicesProvider)
-                            .getLocalFilePath(book.bookId, 'pdf');
+                            .getLocalFilePath(book.fileId, 'pdf'); // Use fileId
                         if (pdfPath != null) {
                           Navigator.push(
                             context,
@@ -73,7 +73,10 @@ class LibraryPage extends ConsumerWidget {
                         onPressed: () async {
                           final audioPath = await ref
                               .read(bookServicesProvider)
-                              .getLocalFilePath(book.bookId, 'mp3');
+                              .getLocalFilePath(
+                                book.audioId,
+                                'mp3',
+                              ); // Use audioId
                           if (audioPath != null) {
                             Navigator.push(
                               context,

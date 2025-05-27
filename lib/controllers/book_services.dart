@@ -40,24 +40,28 @@ class BookServices {
 
   Future<String> downloadFile(
     String fileId,
-    String bookId,
+    String saveAsId,
     String extension,
   ) async {
     try {
       final fileData = await getFileData(fileId);
-      return await _fileDownloadService.downloadFile(
+      final filePath = await _fileDownloadService.downloadFile(
         fileData,
-        bookId,
+        saveAsId,
         extension,
       );
+      _logger.i('Downloaded file $fileId as $saveAsId.$extension to $filePath');
+      return filePath;
     } catch (e) {
-      _logger.e('Failed to download file: $e');
+      _logger.e(
+        'Failed to download file: $fileId, saveAsId: $saveAsId, extension: $extension, error: $e',
+      );
       throw Exception('Failed to download file: $e');
     }
   }
 
-  Future<bool> isFileDownloaded(String bookId, String extension) async {
-    return await _fileDownloadService.isFileDownloaded(bookId, extension);
+  Future<bool> isFileDownloaded(String fileId, String extension) async {
+    return await _fileDownloadService.isFileDownloaded(fileId, extension);
   }
 
   Future<String?> getLocalFilePath(String bookId, String extension) async {
@@ -69,7 +73,7 @@ class BookServices {
       final books = await getBooks();
       final downloadedBooks = <Book>[];
       for (var book in books) {
-        final isPdfDownloaded = await isFileDownloaded(book.bookId, 'pdf');
+        final isPdfDownloaded = await isFileDownloaded(book.fileId, 'pdf');
         if (isPdfDownloaded) {
           downloadedBooks.add(book);
         }

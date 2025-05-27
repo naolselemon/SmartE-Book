@@ -1,8 +1,14 @@
+// import 'package:appwrite/appwrite.dart';
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smart_ebook/views/providers/books_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/reviewspage.dart';
+import 'package:smart_ebook/views/providers/books_provider.dart';
 
 class BookDetailPage extends ConsumerWidget {
   final String bookId;
@@ -213,6 +219,7 @@ class BookDetailPage extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(height: 20),
+
                             // Download button
                             Consumer(
                               builder: (context, ref, child) {
@@ -221,51 +228,254 @@ class BookDetailPage extends ConsumerWidget {
                                 );
                                 return FutureBuilder<List<bool>>(
                                   future: Future.wait([
+                                    bookServices.isFileDownloaded(pdfId, 'pdf'),
                                     bookServices.isFileDownloaded(
-                                      bookId,
-                                      'pdf',
-                                    ),
-                                    bookServices.isFileDownloaded(
-                                      bookId,
+                                      audioId,
                                       'mp3',
                                     ),
                                   ]),
                                   builder: (context, snapshot) {
                                     if (!snapshot.hasData) {
-                                      return ElevatedButton(
-                                        onPressed: null,
-                                        child: const Text("Checking..."),
-                                      );
+                                      return const CircularProgressIndicator();
                                     }
                                     final isPdfDownloaded = snapshot.data![0];
                                     final isAudioDownloaded =
                                         snapshot.data![1] || audioId.isEmpty;
                                     final allDownloaded =
                                         isPdfDownloaded && isAudioDownloaded;
+
                                     return ElevatedButton.icon(
                                       onPressed:
                                           allDownloaded
                                               ? null
                                               : () async {
                                                 try {
+                                                  // Log permission status
+                                                  final storageStatus =
+                                                      await Permission
+                                                          .storage
+                                                          .status;
+                                                  final photosStatus =
+                                                      await Permission
+                                                          .photos
+                                                          .status;
+                                                  final audioStatus =
+                                                      await Permission
+                                                          .audio
+                                                          .status;
+                                                  debugPrint(
+                                                    'Permissions: storage=$storageStatus, photos=$photosStatus, audio=$audioStatus',
+                                                  );
+
+                                                  // Request permissions
+                                                  bool permissionGranted =
+                                                      true; // Assume true for app-specific storage
+                                                  if (Platform.isAndroid) {
+                                                    final deviceInfo =
+                                                        DeviceInfoPlugin();
+                                                    final androidInfo =
+                                                        await deviceInfo
+                                                            .androidInfo;
+                                                    final sdkInt =
+                                                        androidInfo
+                                                            .version
+                                                            .sdkInt;
+                                                    if (sdkInt >= 33) {
+                                                      // Android 13+: Request media permissions
+                                                      final statuses =
+                                                          await [
+                                                            Permission.photos
+                                                                .request(),
+                                                            Permission.audio
+                                                                .request(),
+                                                          ].wait;
+                                                      permissionGranted =
+                                                          statuses.every(
+                                                            (status) =>
+                                                                status
+                                                                    .isGranted,
+                                                          );
+                                                      if (!permissionGranted &&
+                                                          statuses.any(
+                                                            (status) =>
+                                                                status
+                                                                    .isPermanentlyDenied,
+                                                          )) {
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          SnackBar(
+                                                            content: const Text(
+                                                              'Please enable media permissions in app settings.',
+                                                            ),
+                                                            action: SnackBarAction(
+                                                              label:
+                                                                  'Open Settings',
+                                                              onPressed:
+                                                                  () =>
+                                                                      openAppSettings(),
+                                                            ),
+                                                          ),
+                                                        );
+                                                        return;
+                                                      }
+                                                    } else {
+                                                      // Android 12 and below: Request storage
+                                                      final status =
+                                                          await Permission
+                                                              .storage
+                                                              .request();
+                                                      permissionGranted =
+                                                          status.isGranted;
+                                                      if (!permissionGranted &&
+                                                          status
+                                                              .isPermanentlyDenied) {
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          SnackBar(
+                                                            content: const Text(
+                                                              'Please enable storage permissions in app settings.',
+                                                            ),
+                                                            action: SnackBarAction(
+                                                              label:
+                                                                  'Open Settings',
+                                                              onPressed:
+                                                                  () =>
+                                                                      openAppSettings(),
+                                                            ),
+                                                          ),
+                                                        );
+                                                        return;
+                                                      }
+                                                    }
+                                                  } else if (Platform.isIOS) {
+                                                    // iOS: Request storage (optional, as app-specific storage doesn't require it)
+                                                    final status =
+                                                        await Permission.storage
+                                                            .request();
+                                                    permissionGranted =
+                                                        status.isGranted;
+                                                    if (!permissionGranted &&
+                                                        status
+                                                            .isPermanentlyDenied) {
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      ).showSnackBar(
+                                                        SnackBar(
+                                                          content: const Text(
+                                                            'Please enable file access in Settings.',
+                                                          ),
+                                                          action: SnackBarAction(
+                                                            label:
+                                                                'Open Settings',
+                                                            onPressed:
+                                                                () =>
+                                                                    openAppSettings(),
+                                                          ),
+                                                        ),
+                                                      );
+                                                      return;
+                                                    }
+                                                  }
+
+                                                  if (!permissionGranted) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          'Permissions denied',
+                                                        ),
+                                                      ),
+                                                    );
+                                                    return;
+                                                  }
+
+                                                  // Log file IDs
+                                                  debugPrint(
+                                                    'Starting download: bookId=$bookId, pdfId=$pdfId, audioId=$audioId',
+                                                  );
+
+                                                  // Show loading dialog
+                                                  showDialog(
+                                                    context: context,
+                                                    barrierDismissible: false,
+                                                    builder:
+                                                        (
+                                                          context,
+                                                        ) => const AlertDialog(
+                                                          content: Row(
+                                                            children: [
+                                                              CircularProgressIndicator(),
+                                                              SizedBox(
+                                                                width: 16,
+                                                              ),
+                                                              Text(
+                                                                'Downloading...',
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                  );
+
+                                                  // Download PDF and audio
+                                                  final downloadFutures =
+                                                      <Future<void>>[];
                                                   if (!isPdfDownloaded &&
                                                       pdfId.isNotEmpty) {
-                                                    await bookServices
-                                                        .downloadFile(
-                                                          pdfId,
-                                                          bookId,
-                                                          'pdf',
-                                                        );
+                                                    downloadFutures.add(
+                                                      bookServices.downloadFile(
+                                                        pdfId,
+                                                        pdfId,
+                                                        'pdf',
+                                                      ),
+                                                    );
                                                   }
                                                   if (!isAudioDownloaded &&
                                                       audioId.isNotEmpty) {
-                                                    await bookServices
-                                                        .downloadFile(
-                                                          audioId,
-                                                          bookId,
-                                                          'mp3',
-                                                        );
+                                                    downloadFutures.add(
+                                                      bookServices.downloadFile(
+                                                        audioId,
+                                                        audioId,
+                                                        'mp3',
+                                                      ),
+                                                    );
                                                   }
+                                                  await Future.wait(
+                                                    downloadFutures,
+                                                  );
+
+                                                  // Verify downloads
+                                                  final pdfExists =
+                                                      await bookServices
+                                                          .isFileDownloaded(
+                                                            pdfId,
+                                                            'pdf',
+                                                          );
+                                                  final audioExists =
+                                                      audioId.isEmpty ||
+                                                      await bookServices
+                                                          .isFileDownloaded(
+                                                            audioId,
+                                                            'mp3',
+                                                          );
+                                                  if (!pdfExists ||
+                                                      (audioId.isNotEmpty &&
+                                                          !audioExists)) {
+                                                    throw Exception(
+                                                      'Verification failed: Files not found after download',
+                                                    );
+                                                  }
+
+                                                  // Close dialog
+                                                  Navigator.of(context).pop();
+
+                                                  // Refresh library
+                                                  ref.invalidate(
+                                                    downloadedBooksProvider,
+                                                  );
+
                                                   ScaffoldMessenger.of(
                                                     context,
                                                   ).showSnackBar(
@@ -276,15 +486,24 @@ class BookDetailPage extends ConsumerWidget {
                                                     ),
                                                   );
                                                 } catch (e) {
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                        'Download failed: $e',
-                                                      ),
-                                                    ),
-                                                  );
+                                                  Navigator.of(context).pop();
+                                                  String errorMessage;
+                                                  // if (e is AppwriteException) {
+                                                  //   errorMessage =
+                                                  //       'Appwrite error: ${e.message}';
+                                                  // } else {
+                                                  //   errorMessage =
+                                                  //       'Download failed: $e';
+                                                  // }
+                                                  // ScaffoldMessenger.of(
+                                                  //   context,
+                                                  // ).showSnackBar(
+                                                  //   SnackBar(
+                                                  //     content: Text(
+                                                  //       errorMessage,
+                                                  //     ),
+                                                  //   ),
+                                                  // );
                                                 }
                                               },
                                       icon: Icon(
@@ -294,8 +513,8 @@ class BookDetailPage extends ConsumerWidget {
                                       ),
                                       label: Text(
                                         allDownloaded
-                                            ? "Downloaded"
-                                            : "Download",
+                                            ? 'Downloaded'
+                                            : 'Download',
                                       ),
                                     );
                                   },
