@@ -36,7 +36,7 @@ class AudioPlayScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
               ),
-              child: Image.asset(imagePath, height: 200),
+              child: Image.network(imagePath, height: 200),
             ),
             SizedBox(height: 20),
             Container(

@@ -85,6 +85,7 @@ class HomePage extends ConsumerWidget {
                   summary: book.description,
                   audioId: book.audioId,
                   audioUrl: book.audioUrl,
+                  fileId: book.fileId,
                 ),
               );
             },
@@ -123,6 +124,7 @@ class HomePage extends ConsumerWidget {
                   summary: book.description,
                   audioId: book.audioId,
                   audioUrl: book.audioUrl,
+                  fileId: book.fileId,
                 ),
               );
             },
@@ -161,6 +163,7 @@ class HomePage extends ConsumerWidget {
                   summary: book.description,
                   audioId: book.audioId,
                   audioUrl: book.audioUrl,
+                  fileId: book.fileId,
                 ),
               );
             },
@@ -199,6 +202,7 @@ class HomePage extends ConsumerWidget {
                   summary: book.description,
                   audioId: book.audioId,
                   audioUrl: book.audioUrl,
+                  fileId: book.fileId,
                 ),
               );
             },
@@ -239,6 +243,7 @@ class HomePage extends ConsumerWidget {
                   summary: book.description,
                   audioId: book.audioId,
                   audioUrl: book.audioUrl,
+                  fileId: book.fileId,
                 ),
               );
             },

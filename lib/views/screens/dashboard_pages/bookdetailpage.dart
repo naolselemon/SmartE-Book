@@ -1,14 +1,14 @@
-// import 'package:appwrite/appwrite.dart';
 import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/reviewspage.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:logger/logger.dart';
 
 class BookDetailPage extends ConsumerWidget {
   final String bookId;
@@ -38,6 +38,7 @@ class BookDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final logger = Logger();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -207,12 +208,12 @@ class BookDetailPage extends ConsumerWidget {
                             Text(summary),
                             const SizedBox(height: 10),
                             Text(
-                              audioId.isNotEmpty
+                              audioId.isNotEmpty || audioUrl.isNotEmpty
                                   ? "Audio Available By The Author"
                                   : "No Audio Available By The Author",
                               style: TextStyle(
                                 color:
-                                    audioId.isNotEmpty
+                                    audioId.isNotEmpty || audioUrl.isNotEmpty
                                         ? Colors.green
                                         : Colors.grey,
                                 fontWeight: FontWeight.bold,
@@ -231,7 +232,7 @@ class BookDetailPage extends ConsumerWidget {
                                     bookServices.isFileDownloaded(pdfId, 'pdf'),
                                     bookServices.isFileDownloaded(
                                       audioId,
-                                      'mp3',
+                                      'mp4',
                                     ),
                                   ]),
                                   builder: (context, snapshot) {
@@ -393,8 +394,8 @@ class BookDetailPage extends ConsumerWidget {
                                                   }
 
                                                   // Log file IDs
-                                                  debugPrint(
-                                                    'Starting download: bookId=$bookId, pdfId=$pdfId, audioId=$audioId',
+                                                  logger.i(
+                                                    'Starting download: bookId=$bookId, pdfId=$pdfId, audioId=$audioId, audioUrl=$audioUrl',
                                                   );
 
                                                   // Show loading dialog
@@ -438,9 +439,39 @@ class BookDetailPage extends ConsumerWidget {
                                                       bookServices.downloadFile(
                                                         audioId,
                                                         audioId,
-                                                        'mp3',
+                                                        'mp4',
                                                       ),
                                                     );
+                                                    logger.i(
+                                                      'Audio downloaded via audioId: $audioId',
+                                                    );
+                                                  } else if (!isAudioDownloaded &&
+                                                      audioId.isEmpty &&
+                                                      audioUrl.isNotEmpty) {
+                                                    final response = await http
+                                                        .get(
+                                                          Uri.parse(audioUrl),
+                                                        );
+                                                    if (response.statusCode ==
+                                                        200) {
+                                                      final dir =
+                                                          await getApplicationDocumentsDirectory();
+                                                      final audioFileId =
+                                                          bookId; // Use bookId as fallback if audioId is empty
+                                                      final file = File(
+                                                        '${dir.path}/$audioFileId.mp4',
+                                                      );
+                                                      await file.writeAsBytes(
+                                                        response.bodyBytes,
+                                                      );
+                                                      logger.i(
+                                                        'Audio downloaded via audioUrl: $audioUrl, saved as $audioFileId.mp4',
+                                                      );
+                                                    } else {
+                                                      throw Exception(
+                                                        'Failed to download audio from $audioUrl',
+                                                      );
+                                                    }
                                                   }
                                                   await Future.wait(
                                                     downloadFutures,
@@ -457,8 +488,10 @@ class BookDetailPage extends ConsumerWidget {
                                                       audioId.isEmpty ||
                                                       await bookServices
                                                           .isFileDownloaded(
-                                                            audioId,
-                                                            'mp3',
+                                                            audioId.isNotEmpty
+                                                                ? audioId
+                                                                : bookId,
+                                                            'mp4',
                                                           );
                                                   if (!pdfExists ||
                                                       (audioId.isNotEmpty &&
@@ -487,23 +520,18 @@ class BookDetailPage extends ConsumerWidget {
                                                   );
                                                 } catch (e) {
                                                   Navigator.of(context).pop();
-                                                  String errorMessage;
-                                                  // if (e is AppwriteException) {
-                                                  //   errorMessage =
-                                                  //       'Appwrite error: ${e.message}';
-                                                  // } else {
-                                                  //   errorMessage =
-                                                  //       'Download failed: $e';
-                                                  // }
-                                                  // ScaffoldMessenger.of(
-                                                  //   context,
-                                                  // ).showSnackBar(
-                                                  //   SnackBar(
-                                                  //     content: Text(
-                                                  //       errorMessage,
-                                                  //     ),
-                                                  //   ),
-                                                  // );
+                                                  logger.e(
+                                                    'Download failed: $e',
+                                                  );
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Download failed: $e',
+                                                      ),
+                                                    ),
+                                                  );
                                                 }
                                               },
                                       icon: Icon(
