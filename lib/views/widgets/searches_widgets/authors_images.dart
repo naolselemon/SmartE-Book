@@ -9,12 +9,21 @@ class AuthorsImages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       child: Column(
-        spacing: 4,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(radius: 40, foregroundImage: AssetImage(image)),
-          Text(name),
+          CircleAvatar(
+            radius: 40,
+            foregroundImage: image.isNotEmpty ? NetworkImage(image) : null,
+
+            child: image.isEmpty ? const Icon(Icons.person, size: 40) : null,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            name.isNotEmpty ? name : 'Unknown',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ],
       ),
     );

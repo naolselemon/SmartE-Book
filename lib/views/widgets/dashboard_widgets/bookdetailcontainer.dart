@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../screens/dashboard_pages/bookdetailpage.dart';
 
-class BookDetailContainer extends StatefulWidget {
+class BookDetailContainer extends ConsumerStatefulWidget {
+  final String bookId;
   final String imagePath;
   final String title;
   final String author;
   final double rating;
   final int reviews;
   final String summary;
+  final String audioId;
+  final String audioUrl;
+  final String fileId;
 
   const BookDetailContainer({
     super.key,
+    required this.bookId,
     required this.imagePath,
     this.title = '',
     this.author = '',
     this.rating = 0.0,
     this.reviews = 0,
     this.summary = '',
+    this.audioId = '',
+    this.audioUrl = '',
+    this.fileId = '',
   });
 
   @override
-  _BookDetailContainerState createState() => _BookDetailContainerState();
+  ConsumerState createState() => _BookDetailContainerState();
 }
 
-class _BookDetailContainerState extends State<BookDetailContainer>
+class _BookDetailContainerState extends ConsumerState<BookDetailContainer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  bool _isHovered = false;
+  final bool _isHovered = false;
 
   @override
   void initState() {
@@ -62,14 +71,11 @@ class _BookDetailContainerState extends State<BookDetailContainer>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final isAmharic = Localizations.localeOf(context).languageCode == 'am';
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTapDown: _onTapDown,
         onTapUp: _onTapUp,
@@ -80,12 +86,16 @@ class _BookDetailContainerState extends State<BookDetailContainer>
             MaterialPageRoute(
               builder:
                   (context) => BookDetailPage(
+                    bookId: widget.bookId,
                     title: widget.title,
                     author: widget.author,
                     imagePath: widget.imagePath,
                     rating: widget.rating,
-                    reviews: widget.reviews,
+                    reviewCount: widget.reviews,
                     summary: widget.summary,
+                    audioId: widget.audioId,
+                    audioUrl: widget.audioUrl,
+                    pdfId: widget.fileId,
                   ),
             ),
           );
@@ -105,22 +115,21 @@ class _BookDetailContainerState extends State<BookDetailContainer>
                   ),
                 ),
                 child: Container(
-                  width: 160, // Increased for better touch target
-                  height: 280, // Fixed height for consistency
+                  width: 160,
+                  height: 280,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: colorScheme.surface,
                   ),
                   child: Stack(
                     children: [
-                      // Book Cover
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
+                        child: Image.network(
                           widget.imagePath,
                           fit: BoxFit.cover,
                           width: double.infinity,
-                          height: 200, // Cover takes upper 2/3
+                          height: 200,
                           errorBuilder:
                               (context, error, stackTrace) => Container(
                                 color: Colors.grey[300],
@@ -132,7 +141,6 @@ class _BookDetailContainerState extends State<BookDetailContainer>
                               ),
                         ),
                       ),
-                      // 3D Shadow Effect
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
@@ -147,7 +155,6 @@ class _BookDetailContainerState extends State<BookDetailContainer>
                           ),
                         ),
                       ),
-                      // Information Overlay
                       Positioned(
                         bottom: 0,
                         left: 0,

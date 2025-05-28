@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/librarypage.dart';
+import 'package:smart_ebook/views/screens/searches_pages/search_page.dart';
 
-import 'drawerComponent/library.dart';
 import 'drawerpage.dart';
 import 'homepage.dart';
 
@@ -27,7 +28,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [HomePage(), LibraryPage()]; // SearchPage()];
+  final List<Widget> _pages = [HomePage(), SearchScreen(), LibraryPage()];
 
   void _onItemTapped(int index) {
     setState(() {

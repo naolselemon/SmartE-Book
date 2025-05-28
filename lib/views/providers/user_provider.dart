@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:smart_ebook/models/user.dart';
-import 'package:smart_ebook/services/appwrite_services.dart';
+import 'package:smart_ebook/controllers/user_services.dart';
+import 'package:smart_ebook/views/providers/books_provider.dart';
 
 // This provider is used to manage the state of the user in the app
 // It provides methods to sign up, sign in, and sign out users
-final userProvider = Provider<AppwriteServices>((ref) => AppwriteServices());
+final userProvider = Provider<UserServices>((ref) => UserServices());
 
 // profile state management data structure
 // This class holds the state of the profile, including user data, loading state, and error messages
@@ -29,15 +29,16 @@ class ProfileState {
 
 // This provider is used to manage the state of the profile
 class ProfileNotifier extends StateNotifier<ProfileState> {
-  final AppwriteServices _appwriteServices;
+  final Ref ref;
+  final UserServices _userServices;
 
-  ProfileNotifier(this._appwriteServices) : super(ProfileState());
+  ProfileNotifier(this.ref, this._userServices) : super(ProfileState());
 
   // Fetch user data from the server
   Future<void> fetchUser() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final user = await _appwriteServices.getCurrentUser();
+      final user = await _userServices.getCurrentUser();
       state = state.copyWith(user: user, isLoading: false, error: null);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -53,7 +54,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final user = await _appwriteServices.updateProfile(
+      final user = await _userServices.updateProfile(
         name: name,
         email: email,
         newPassword: password,
@@ -69,7 +70,11 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _appwriteServices.signOut();
+      await _userServices.signOut();
+      ref.invalidate(booksWithRatingProvider);
+      ref.invalidate(favoriteBooksWithRatingProvider);
+      ref.invalidate(newBooksProvider);
+      ref.invalidate(freeBooksProvider);
       state = state.copyWith(user: null, isLoading: false, error: null);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -77,14 +82,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   }
 
   Future<bool> isUserSignedIn() async {
-    return await _appwriteServices.isUserSignedIn();
+    return await _userServices.isUserSignedIn();
   }
 }
 
-//making the provider available to the app
+// Making the provider available to the app
 final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((
   ref,
 ) {
-  final appwriteServices = ref.watch(userProvider);
-  return ProfileNotifier(appwriteServices);
+  final userServices = ref.watch(userProvider);
+  return ProfileNotifier(ref, userServices);
 });
