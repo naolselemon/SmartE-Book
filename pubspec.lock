@@ -305,14 +305,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.2"
-  extension:
-    dependency: transitive
-    description:
-      name: extension
-      sha256: be3a6b7f8adad2f6e2e8c63c895d19811fcf203e23466c6296267941d0ff4f24
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.0"
   fake_async:
     dependency: transitive
     description:
@@ -432,6 +424,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_tts:
+    dependency: "direct main"
+    description:
+      name: flutter_tts
+      sha256: baa3cb6b4990318460fe28bfa8c7869399e97223971532c02bd97c5e876aa3c5
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.2"
   flutter_web_auth_2:
     dependency: "direct overridden"
     description:
@@ -497,10 +497,10 @@ packages:
     dependency: "direct main"
     description:
       name: http
-      sha256: "2c11f3f94c687ee9bad77c171151672986360b2b001d109814ee7140b2cf261b"
+      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "0.13.6"
   http_multi_server:
     dependency: transitive
     description:
@@ -773,14 +773,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  pdfx:
-    dependency: "direct main"
-    description:
-      name: pdfx
-      sha256: "466d8b2ee79f208330698f96b132b07c4a717afc815e5a394f065044cb001607"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.9.1"
   permission_handler:
     dependency: "direct main"
     description:
@@ -829,14 +821,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
-  photo_view:
-    dependency: transitive
-    description:
-      name: photo_view
-      sha256: "1fc3d970a91295fbd1364296575f854c9863f225505c28c46e0a03e48960c75e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.0"
   platform:
     dependency: transitive
     description:
@@ -1098,14 +1082,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.2"
-  universal_platform:
-    dependency: transitive
-    description:
-      name: universal_platform
-      sha256: "64e16458a0ea9b99260ceb5467a214c1f298d647c659af1bff6d3bf82536b1ec"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   url_launcher:
     dependency: transitive
     description:

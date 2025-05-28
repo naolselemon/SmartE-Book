@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'audioplaypage.dart';
-import 'pdfviewerpage.dart';
 import 'package:logger/logger.dart';
 
 class LibraryPage extends ConsumerWidget {
@@ -55,22 +54,22 @@ class LibraryPage extends ConsumerWidget {
                         final pdfPath = await ref
                             .read(bookServicesProvider)
                             .getLocalFilePath(book.fileId, 'pdf');
-                        if (pdfPath != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => PDFViewerPage(
-                                    title: book.title,
-                                    pdfPath: pdfPath,
-                                  ),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('PDF not found')),
-                          );
-                        }
+                        // if (pdfPath != null) {
+                        //   Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder:
+                        //           (context) => PDFViewerPage(
+                        //             title: book.title,
+                        //             pdfPath: pdfPath,
+                        //           ),
+                        //     ),
+                        //   );
+                        // } else {
+                        //   ScaffoldMessenger.of(context).showSnackBar(
+                        //     const SnackBar(content: Text('PDF not found')),
+                        //   );
+                        // }
                       },
                     ),
                     if (book.audioId.isNotEmpty || book.audioUrl.isNotEmpty)
@@ -87,11 +86,9 @@ class LibraryPage extends ConsumerWidget {
                           String? audioPath = await ref
                               .read(bookServicesProvider)
                               .getLocalFilePath(audioFileId, 'mp4');
-                          if (audioPath == null) {
-                            audioPath = await ref
-                                .read(bookServicesProvider)
-                                .getLocalFilePath(audioFileId, 'mp3');
-                          }
+                          audioPath ??= await ref
+                              .read(bookServicesProvider)
+                              .getLocalFilePath(audioFileId, 'mp3');
                           if (audioPath != null) {
                             logger.i('Audio found: $audioPath');
                             Navigator.push(
