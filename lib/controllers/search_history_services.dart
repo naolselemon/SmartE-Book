@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:appwrite/appwrite.dart';
 
 import 'package:logger/logger.dart';
@@ -16,7 +18,7 @@ class SearchHistoryServices {
   Future<void> logSearch({
     required String userId,
     required String query,
-    // required Map<String, dynamic> desc,
+    required Map<String, dynamic> desc,
     required String bookId,
   }) async {
     try {
@@ -27,7 +29,7 @@ class SearchHistoryServices {
         data: {
           'userId': userId,
           'query': query,
-          // 'description': desc,
+          'description': jsonEncode(desc),
           'bookId': bookId,
           'timestamp': DateTime.now().toIso8601String(),
         },

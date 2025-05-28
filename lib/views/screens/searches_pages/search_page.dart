@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:smart_ebook/views/providers/search_providers.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/bookdetailpage.dart';
+import 'package:smart_ebook/views/widgets/dashboard_widgets/bookdetailcontainer.dart';
 import 'package:smart_ebook/views/widgets/searches_widgets/authors_images.dart';
-import 'package:smart_ebook/views/widgets/searches_widgets/book_coverpage.dart';
 import 'package:smart_ebook/views/widgets/searches_widgets/categories_card.dart';
 import 'package:logger/logger.dart';
 
@@ -36,6 +36,7 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
 
   void _filterByGenre(String genre) {
     ref.read(searchQueryProvider.notifier).state = genre;
+    _searchController.text = genre; // Set search bar text to trigger overlay
   }
 
   @override
@@ -43,7 +44,7 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
     final searchResultsAsync = ref.watch(searchResultsProvider);
     final genresAsync = ref.watch(genresProvider);
     final authorsAsync = ref.watch(authorsProvider);
-    final trendingBooksAsync = ref.watch(trendingBooksProvider);
+    final trendingBooksAsync = ref.watch(booksWithRatingProvider);
 
     return Scaffold(
       body: Padding(
@@ -107,6 +108,9 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                                       return CategoriesCard(
                                         text: genre,
                                         onCategoryClicked: _filterByGenre,
+                                        isSelected:
+                                            genre ==
+                                            ref.watch(searchQueryProvider),
                                       );
                                     }).toList(),
                               ),
@@ -162,28 +166,52 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    trendingBooksAsync.when(
-                      data:
-                          (books) => SingleChildScrollView(
+                    SizedBox(
+                      height: 180,
+                      child: trendingBooksAsync.when(
+                        data: (books) {
+                          final trendingBooks =
+                              books.where((b) => b.reviewCount >= 0).toList();
+                          if (trendingBooks.isEmpty) {
+                            return const Center(
+                              child: Text('No trending books available'),
+                            );
+                          }
+                          trendingBooks.sort(
+                            (a, b) => b.reviewCount.compareTo(a.reviewCount),
+                          );
+                          final displayBooks = trendingBooks.take(4).toList();
+                          return ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children:
-                                  books
-                                      .map(
-                                        (book) => BookCoverpage(
-                                          image: book.coverPageUrl,
-                                        ),
-                                      )
-                                      .toList(),
+                            itemCount: displayBooks.length,
+                            itemBuilder: (context, index) {
+                              final bookWithRating = displayBooks[index];
+                              final book = bookWithRating.book;
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: BookDetailContainer(
+                                  bookId: book.bookId,
+                                  imagePath: book.coverPageUrl,
+                                  title: book.title,
+                                  author: book.author,
+                                  rating: bookWithRating.rating,
+                                  reviews: bookWithRating.reviewCount,
+                                  summary: book.description,
+                                  audioId: book.audioId,
+                                  audioUrl: book.audioUrl,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        loading:
+                            () => const Center(
+                              child: CircularProgressIndicator(),
                             ),
-                          ),
-                      loading:
-                          () =>
-                              const Center(child: CircularProgressIndicator()),
-                      error:
-                          (error, stack) =>
-                              Text('Error loading trending books: $error'),
+                        error:
+                            (error, stack) =>
+                                Center(child: Text('Error: $error')),
+                      ),
                     ),
                   ],
                 ),
@@ -295,9 +323,9 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                                                         query:
                                                             _searchController
                                                                 .text,
-                                                        // desc: {
-                                                        //   'genre': book.genre,
-                                                        // },
+                                                        desc: {
+                                                          'genre': book.genre,
+                                                        },
                                                         bookId: book.bookId,
                                                       );
                                                 }
