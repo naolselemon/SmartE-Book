@@ -4,12 +4,14 @@ import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'audioplaypage.dart';
 import 'pdfviewerpage.dart';
+import 'package:logger/logger.dart';
 
 class LibraryPage extends ConsumerWidget {
   const LibraryPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final logger = Logger();
     return Scaffold(
       appBar: AppBar(title: const Text("Library")),
       body: FutureBuilder<List<Book>>(
@@ -38,8 +40,12 @@ class LibraryPage extends ConsumerWidget {
                       (context, error, stackTrace) =>
                           const Icon(Icons.broken_image),
                 ),
-                title: Text(book.title),
-                subtitle: Text(book.author),
+                title: Text(
+                  book.title.isNotEmpty ? book.title : 'Unknown Title',
+                ),
+                subtitle: Text(
+                  book.author.isNotEmpty ? book.author : 'Unknown Author',
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -48,7 +54,7 @@ class LibraryPage extends ConsumerWidget {
                       onPressed: () async {
                         final pdfPath = await ref
                             .read(bookServicesProvider)
-                            .getLocalFilePath(book.fileId, 'pdf'); // Use fileId
+                            .getLocalFilePath(book.fileId, 'pdf');
                         if (pdfPath != null) {
                           Navigator.push(
                             context,
@@ -67,17 +73,27 @@ class LibraryPage extends ConsumerWidget {
                         }
                       },
                     ),
-                    if (book.audioId.isNotEmpty)
+                    if (book.audioId.isNotEmpty || book.audioUrl.isNotEmpty)
                       IconButton(
                         icon: const Icon(Icons.play_arrow),
                         onPressed: () async {
-                          final audioPath = await ref
+                          final audioFileId =
+                              book.audioId.isNotEmpty
+                                  ? book.audioId
+                                  : book.bookId;
+                          logger.i(
+                            'Looking for audio: $audioFileId.mp4 or $audioFileId.mp3',
+                          );
+                          String? audioPath = await ref
                               .read(bookServicesProvider)
-                              .getLocalFilePath(
-                                book.audioId,
-                                'mp3',
-                              ); // Use audioId
+                              .getLocalFilePath(audioFileId, 'mp4');
+                          if (audioPath == null) {
+                            audioPath = await ref
+                                .read(bookServicesProvider)
+                                .getLocalFilePath(audioFileId, 'mp3');
+                          }
                           if (audioPath != null) {
+                            logger.i('Audio found: $audioPath');
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -86,11 +102,12 @@ class LibraryPage extends ConsumerWidget {
                                       title: book.title,
                                       author: book.author,
                                       imagePath: book.coverPageUrl,
-                                      localAudioPath: audioPath,
+                                      localAudioPath: audioPath!,
                                     ),
                               ),
                             );
                           } else {
+                            logger.w('Audio not found for $audioFileId');
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Audio not found')),
                             );
