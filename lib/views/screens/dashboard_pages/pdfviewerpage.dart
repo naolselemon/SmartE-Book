@@ -10,11 +10,7 @@ class PDFViewerPage extends StatefulWidget {
   final String title;
   final String pdfPath;
 
-  const PDFViewerPage({
-    super.key,
-    required this.title,
-    required this.pdfPath,
-  });
+  const PDFViewerPage({super.key, required this.title, required this.pdfPath});
 
   @override
   State<PDFViewerPage> createState() => _PDFViewerPageState();
@@ -35,6 +31,8 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   double _speechRate = 0.5;
   double _pitch = 1.0;
   String _language = 'en-US';
+  final Map<int, String> _textCache = {};
+  static const int _maxCacheSize = 20;
 
   @override
   void initState() {
@@ -61,7 +59,15 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
           _isTtsPaused = false;
         });
         if (_currentPage < _totalPages) {
-          _changePage(_currentPage + 1).then((_) => _playTts());
+          try {
+            _changePage(_currentPage + 1).then((_) => _playTts());
+          } catch (e, stack) {
+            _logger.e('Error in TTS completion: $e', stackTrace: stack);
+            setState(() => _ttsError = 'Failed to process next page: $e');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to process next page: $e')),
+            );
+          }
         }
       });
 
@@ -82,9 +88,9 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
           _isTtsPlaying = false;
           _isTtsPaused = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('TTS error: $msg')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('TTS error: $msg')));
       });
 
       await _tts.setLanguage(_language);
@@ -93,75 +99,125 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
       await _tts.setPitch(_pitch);
 
       setState(() => _isTtsInitialized = true);
-    } catch (e) {
-      _logger.e('Failed to initialize TTS: $e');
+    } catch (e, stack) {
+      _logger.e('Failed to initialize TTS: $e', stackTrace: stack);
       setState(() => _ttsError = 'Failed to initialize TTS: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to initialize TTS: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to initialize TTS: $e')));
     }
   }
 
   Future<void> _loadPdfText() async {
     setState(() => _isLoadingText = true);
     try {
-      _logger.i('Loading PDF text from: ${widget.pdfPath}');
+      _logger.i(
+        'Loading PDF text for page $_currentPage from: ${widget.pdfPath}',
+      );
       if (!await File(widget.pdfPath).existsSync()) {
         throw Exception('PDF file not found at ${widget.pdfPath}');
       }
 
-      // Since pdfx doesn't support text extraction, rely on OCR
+      if (_textCache.containsKey(_currentPage)) {
+        _extractedText = _textCache[_currentPage]!;
+        _logger.i(
+          'Loaded cached text (page $_currentPage): ${_extractedText.length} characters',
+        );
+        setState(() => _isLoadingText = false);
+        return;
+      }
+
       await _loadPdfTextWithOCR();
-      setState(() => _isLoadingText = false);
-    } catch (e) {
-      _logger.e('Failed to load PDF text: $e');
+    } catch (e, stack) {
+      _logger.e('Failed to load PDF text: $e', stackTrace: stack);
       setState(() {
         _ttsError = 'Failed to load PDF text: $e';
         _isLoadingText = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load PDF text: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load PDF text: $e')));
+    } finally {
+      setState(() => _isLoadingText = false);
     }
   }
 
   Future<void> _loadPdfTextWithOCR() async {
+    PdfDocument? pdfDoc;
+    PdfPage? page;
+    File? tempFile;
     try {
       _logger.i('Loading PDF for OCR from: ${widget.pdfPath}');
-      final pdfDoc = await PdfDocument.openFile(widget.pdfPath);
+      pdfDoc = await PdfDocument.openFile(widget.pdfPath);
       _totalPages = pdfDoc.pagesCount;
-      final page = await pdfDoc.getPage(_currentPage);
+      page = await pdfDoc.getPage(_currentPage);
+
+      // Lower resolution to prevent memory issues
       final pageImage = await page.render(
-        width: page.width,
-        height: page.height,
+        width: page.width * 1.2,
+        height: page.height * 1.2,
         format: PdfPageImageFormat.png,
+        quality: 85,
       );
+
       final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/page_$_currentPage.png');
+      tempFile = File('${tempDir.path}/page_$_currentPage.png');
       await tempFile.writeAsBytes(pageImage!.bytes);
       final inputImage = InputImage.fromFilePath(tempFile.path);
-      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-      final recognizedText = await textRecognizer.processImage(inputImage);
-      _extractedText = recognizedText.text;
+
+      // Try multiple scripts, skipping unsupported ones
+      for (var script in [
+        TextRecognitionScript.latin,
+        TextRecognitionScript.devanagiri, // Fixed typo
+        TextRecognitionScript.chinese,
+        TextRecognitionScript.japanese,
+        TextRecognitionScript.korean,
+      ]) {
+        try {
+          final textRecognizer = TextRecognizer(script: script);
+          final recognizedText = await textRecognizer.processImage(inputImage);
+          _extractedText = recognizedText.text;
+          await textRecognizer.close();
+
+          if (_extractedText.isNotEmpty) {
+            _textCache[_currentPage] = _extractedText;
+            _logger.i(
+              'OCR extracted text (page $_currentPage, script: $script): ${_extractedText.length} characters',
+            );
+            break;
+          }
+        } catch (e, stack) {
+          _logger.w(
+            'Script $script not supported or failed: $e',
+            stackTrace: stack,
+          );
+          continue; // Skip to next script
+        }
+      }
+
       if (_extractedText.isEmpty) {
         _logger.w('No text found on page $_currentPage via OCR');
-        setState(() => _ttsError = 'No text found on this page via OCR');
-      } else {
-        _logger.i('OCR extracted text (page $_currentPage): ${_extractedText.length} characters');
+        setState(
+          () =>
+              _ttsError =
+                  'This page appears to be blank or contains no recognizable text',
+        );
       }
-      await page.close();
-      await pdfDoc.close();
-      await textRecognizer.close();
-      await tempFile.delete();
-    } catch (e) {
-      _logger.e('Failed to load PDF text with OCR: $e');
-      setState(() {
-        _ttsError = 'Failed to load PDF text with OCR: $e';
-        _isLoadingText = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load PDF text with OCR: $e')),
-      );
+
+      if (_textCache.length > _maxCacheSize) {
+        _textCache.remove(_textCache.keys.first);
+        _logger.i('Evicted oldest cache entry');
+      }
+    } catch (e, stack) {
+      _logger.e('Failed to load PDF text with OCR: $e', stackTrace: stack);
+      setState(() => _ttsError = 'Failed to load PDF text with OCR: $e');
+    } finally {
+      await page?.close();
+      await pdfDoc?.close();
+      if (await tempFile?.exists() ?? false) {
+        await tempFile?.delete();
+        _logger.i('Deleted temp file: ${tempFile?.path}');
+      }
     }
   }
 
@@ -176,11 +232,11 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     try {
       _logger.i('Starting TTS for page $_currentPage');
       await _tts.speak(_extractedText);
-    } catch (e) {
-      _logger.e('TTS playback error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('TTS playback error: $e')),
-      );
+    } catch (e, stack) {
+      _logger.e('TTS playback error: $e', stackTrace: stack);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('TTS playback error: $e')));
     }
   }
 
@@ -188,11 +244,11 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     try {
       _logger.i('Pausing TTS');
       await _tts.pause();
-    } catch (e) {
-      _logger.e('TTS pause error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('TTS pause error: $e')),
-      );
+    } catch (e, stack) {
+      _logger.e('TTS pause error: $e', stackTrace: stack);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('TTS pause error: $e')));
     }
   }
 
@@ -204,11 +260,11 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
         _isTtsPlaying = false;
         _isTtsPaused = false;
       });
-    } catch (e) {
-      _logger.e('TTS stop error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('TTS stop error: $e')),
-      );
+    } catch (e, stack) {
+      _logger.e('TTS stop error: $e', stackTrace: stack);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('TTS stop error: $e')));
     }
   }
 
@@ -216,8 +272,16 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     if (page < 1 || page > _totalPages) return;
     await _stopTts();
     setState(() => _currentPage = page);
-    _pdfController.jumpToPage(page - 1);
-    await _loadPdfText();
+    try {
+      _pdfController.jumpToPage(page - 1);
+      await _loadPdfText();
+    } catch (e, stack) {
+      _logger.e('Failed to change page: $e', stackTrace: stack);
+      setState(() => _ttsError = 'Failed to load page $page: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load page $page: $e')));
+    }
   }
 
   @override
@@ -225,6 +289,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     _logger.i('Disposing PDFViewerPage');
     _pdfController.dispose();
     _tts.stop();
+    _textCache.clear();
     super.dispose();
   }
 
@@ -235,13 +300,17 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
         title: Text(widget.title),
         actions: [
           Semantics(
-            label: _isTtsPlaying && !_isTtsPaused ? 'Pause reading' : 'Play reading',
+            label:
+                _isTtsPlaying && !_isTtsPaused
+                    ? 'Pause reading'
+                    : 'Play reading',
             child: IconButton(
               icon: Icon(
                 _isTtsPlaying && !_isTtsPaused ? Icons.pause : Icons.play_arrow,
               ),
               onPressed: _isTtsPlaying && !_isTtsPaused ? _pauseTts : _playTts,
-              tooltip: _isTtsPlaying && !_isTtsPaused ? 'Pause TTS' : 'Play TTS',
+              tooltip:
+                  _isTtsPlaying && !_isTtsPaused ? 'Pause TTS' : 'Play TTS',
             ),
           ),
           Semantics(
@@ -266,7 +335,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
                 );
               },
               onPageChanged: (page) {
-                if (page + 1 != _currentPage) {
+                if (page != null && page + 1 != _currentPage) {
                   _changePage(page + 1);
                 }
               },
@@ -294,12 +363,15 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
               children: [
                 DropdownButton<String>(
                   value: _language,
-                  items: ['en-US', 'es-ES', 'fr-FR']
-                      .map((lang) => DropdownMenuItem(
-                            value: lang,
-                            child: Text(lang),
-                          ))
-                      .toList(),
+                  items:
+                      ['en-US', 'es-ES', 'fr-FR']
+                          .map(
+                            (lang) => DropdownMenuItem(
+                              value: lang,
+                              child: Text(lang),
+                            ),
+                          )
+                          .toList(),
                   onChanged: (value) async {
                     setState(() => _language = value!);
                     await _tts.setLanguage(value!);
@@ -332,7 +404,10 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -340,7 +415,10 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
                   label: 'Previous page',
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back),
-                    onPressed: _currentPage > 1 ? () => _changePage(_currentPage - 1) : null,
+                    onPressed:
+                        _currentPage > 1
+                            ? () => _changePage(_currentPage - 1)
+                            : null,
                     tooltip: 'Previous Page',
                   ),
                 ),
@@ -349,7 +427,10 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
                   label: 'Next page',
                   child: IconButton(
                     icon: const Icon(Icons.arrow_forward),
-                    onPressed: _currentPage < _totalPages ? () => _changePage(_currentPage + 1) : null,
+                    onPressed:
+                        _currentPage < _totalPages
+                            ? () => _changePage(_currentPage + 1)
+                            : null,
                     tooltip: 'Next Page',
                   ),
                 ),
