@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/pdfviewerpage.dart';
 import 'audioplaypage.dart';
 import 'package:logger/logger.dart';
 
@@ -54,22 +55,22 @@ class LibraryPage extends ConsumerWidget {
                         final pdfPath = await ref
                             .read(bookServicesProvider)
                             .getLocalFilePath(book.fileId, 'pdf');
-                        // if (pdfPath != null) {
-                        //   Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //       builder:
-                        //           (context) => PDFViewerPage(
-                        //             title: book.title,
-                        //             pdfPath: pdfPath,
-                        //           ),
-                        //     ),
-                        //   );
-                        // } else {
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     const SnackBar(content: Text('PDF not found')),
-                        //   );
-                        // }
+                        if (pdfPath != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => PDFViewerPage(
+                                    title: book.title,
+                                    pdfPath: pdfPath,
+                                  ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('PDF not found')),
+                          );
+                        }
                       },
                     ),
                     if (book.audioId.isNotEmpty || book.audioUrl.isNotEmpty)
