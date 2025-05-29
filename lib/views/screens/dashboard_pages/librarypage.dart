@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/pdfviewerpage.dart';
 import 'audioplaypage.dart';
-import 'pdfviewerpage.dart';
 import 'package:logger/logger.dart';
 
 class LibraryPage extends ConsumerWidget {
@@ -87,11 +87,9 @@ class LibraryPage extends ConsumerWidget {
                           String? audioPath = await ref
                               .read(bookServicesProvider)
                               .getLocalFilePath(audioFileId, 'mp4');
-                          if (audioPath == null) {
-                            audioPath = await ref
-                                .read(bookServicesProvider)
-                                .getLocalFilePath(audioFileId, 'mp3');
-                          }
+                          audioPath ??= await ref
+                              .read(bookServicesProvider)
+                              .getLocalFilePath(audioFileId, 'mp3');
                           if (audioPath != null) {
                             logger.i('Audio found: $audioPath');
                             Navigator.push(
