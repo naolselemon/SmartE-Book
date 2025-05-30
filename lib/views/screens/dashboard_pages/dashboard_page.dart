@@ -28,7 +28,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [HomePage(), SearchScreen(), LibraryPage()];
+  List<Widget> _buildPages(String? userId) {
+    return [HomePage(userId: userId ?? ''), SearchScreen(), LibraryPage()];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -39,6 +41,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final profile = ref.watch(profileProvider);
+    final pages = _buildPages(profile.user?.id); // Get userId from profile
 
     return Scaffold(
       appBar: AppBar(
@@ -60,14 +63,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
       drawer: DrawerPage(),
-      body: _pages[_selectedIndex],
+      body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.deepPurple,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),
