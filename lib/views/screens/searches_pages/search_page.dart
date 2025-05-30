@@ -354,6 +354,7 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                                                           audioUrl:
                                                               book.audioUrl,
                                                           pdfId: book.fileId,
+                                                          price: book.price,
                                                         ),
                                                   ),
                                                 );

@@ -13,6 +13,7 @@ class BookDetailContainer extends ConsumerStatefulWidget {
   final String audioId;
   final String audioUrl;
   final String fileId;
+  final double price;
 
   const BookDetailContainer({
     super.key,
@@ -26,6 +27,7 @@ class BookDetailContainer extends ConsumerStatefulWidget {
     this.audioId = '',
     this.audioUrl = '',
     this.fileId = '',
+    this.price = 0.0,
   });
 
   @override
@@ -96,6 +98,7 @@ class _BookDetailContainerState extends ConsumerState<BookDetailContainer>
                     audioId: widget.audioId,
                     audioUrl: widget.audioUrl,
                     pdfId: widget.fileId,
+                    price: widget.price,
                   ),
             ),
           );
