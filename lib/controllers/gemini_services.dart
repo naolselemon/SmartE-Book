@@ -109,7 +109,7 @@ class GeminiService {
             final lastValidBracket = cleanedText.lastIndexOf('}');
             if (lastValidBracket > 0) {
               final partialText =
-                  cleanedText.substring(0, lastValidBracket + 1) + ']';
+                  '${cleanedText.substring(0, lastValidBracket + 1)}]';
               final recommendations = jsonDecode(partialText) as List<dynamic>?;
               if (recommendations != null && recommendations.isNotEmpty) {
                 print('Parsed partial recommendations: $recommendations');

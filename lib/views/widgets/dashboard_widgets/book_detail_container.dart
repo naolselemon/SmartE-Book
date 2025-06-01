@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../screens/dashboard_pages/bookdetailpage.dart';
+import '../../screens/dashboard_pages/book_detail_page.dart';
 
 class BookDetailContainer extends ConsumerStatefulWidget {
   final String bookId;

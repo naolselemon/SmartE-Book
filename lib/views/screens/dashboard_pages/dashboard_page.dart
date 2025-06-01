@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
-import 'package:smart_ebook/views/screens/dashboard_pages/librarypage.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/library_page.dart';
 import 'package:smart_ebook/views/screens/searches_pages/search_page.dart';
 
-import 'drawerpage.dart';
-import 'homepage.dart';
+import 'drawer_page.dart';
+import 'home_page.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});

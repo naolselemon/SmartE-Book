@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/dashboard_widgets/audioplayerwidget.dart';
+import '../../widgets/dashboard_widgets/audioplayer_widget.dart';
 
 class AudioPlayScreen extends StatelessWidget {
   final String title;

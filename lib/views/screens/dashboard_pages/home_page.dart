@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:smart_ebook/views/providers/recommendation_provider.dart';
-import 'package:smart_ebook/views/widgets/dashboard_widgets/bookdetailcontainer.dart';
+import 'package:smart_ebook/views/widgets/dashboard_widgets/book_detail_container.dart';
 import 'package:smart_ebook/views/widgets/dashboard_widgets/sectiontitle.dart';
 
 class HomePage extends ConsumerWidget {

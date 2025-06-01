@@ -184,7 +184,7 @@ class _SignInState extends ConsumerState<SignIn> {
                           _isLoading
                               ? CircularProgressIndicator()
                               : Text(
-                                "Sign Up",
+                                "Sign In",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
