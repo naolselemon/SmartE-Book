@@ -73,7 +73,6 @@
   "loginToReview": "Please log in to add a review",
   "provideRatingAndComment": "Please provide a rating and comment",
   "reviewAddedSuccessfully": "Review added successfully",
-  "failedToAddReview": "Failed to add review: {error}",
   "noReviewsYet": "No reviews yet.",
   "addAReview": "Add a Review",
   "commentLabel": "Comment",

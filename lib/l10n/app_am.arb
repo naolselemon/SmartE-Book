@@ -73,7 +73,7 @@
   "loginToReview": "ግምገማ ለመጨመር እባክዎ ይግቡ",
   "provideRatingAndComment": "እባክዎ ደረጃ እና አስተያየት ያቅርቡ",
   "reviewAddedSuccessfully": "ግምገማ በተሳካ ሁኔታ ተጨምሯል",
-  "failedToAddReview": "ግምገማ መጨመር አልተሳካም፡ {error}",
+
   "noReviewsYet": "እስካሁን ግምገማዎች የሉም።",
   "addAReview": "ግምገማ ጨምር",
   "commentLabel": "አስተያየት",

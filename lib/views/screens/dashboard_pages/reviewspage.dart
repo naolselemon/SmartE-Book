@@ -24,13 +24,17 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
     final profileState = ref.read(profileProvider);
     if (profileState.user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please log in to add a review")), //
+        SnackBar(
+          content: Text(localizations.loginToReview),
+        ), //"Please log in to add a review"
       );
       return;
     }
     if (_rating == 0.0 || _comment.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a rating and comment')),
+        SnackBar(
+          content: Text(localizations.provideRatingAndComment),
+        ), // 'Please provide a rating and comment'
       );
       return;
     }
@@ -43,9 +47,9 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
         _comment = '';
       });
       ref.invalidate(reviewsProvider(widget.bookId));
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Review added successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizations.addAReview)),
+      ); // 'Review added successfully'
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -55,13 +59,16 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final reviewsAsync = ref.watch(reviewsProvider(widget.bookId));
     return reviewsAsync.when(
       data: (reviews) {
         if (reviews.isEmpty) {
           return Column(
             children: [
-              const Expanded(child: Center(child: Text("No reviews yet."))),
+              Expanded(
+                child: Center(child: Text(localizations.noReviewsYet)),
+              ), // No reviews yet."
               _buildReviewForm(),
             ],
           );
@@ -127,12 +134,13 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
   }
 
   Widget _buildReviewForm() {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Text(
-            "Add a Review",
+            localizations.addAReview, // "Add a Review"
             style: GoogleFonts.lato(fontSize: 20, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 3),
@@ -151,7 +159,7 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
             },
           ),
           TextField(
-            decoration: const InputDecoration(labelText: "Comment"),
+            decoration: InputDecoration(labelText: localizations.commentLabel),
             onChanged: (value) {
               setState(() {
                 _comment = value;
@@ -159,7 +167,7 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
             },
           ),
           const SizedBox(height: 10),
-          ElevatedButton(onPressed: _submitReview, child: const Text("Submit")),
+          ElevatedButton(onPressed: _submitReview, child: Text("Submit")),
         ],
       ),
     );

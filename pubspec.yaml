@@ -37,7 +37,7 @@ dependencies:
   uuid: ^4.5.1
   google_fonts: ^6.2.1
   audioplayers: ^6.4.0
-  pdfx: ^2.6.0
+  # pdfx: ^2.6.0
   appwrite: ^15.0.1
   flutter_riverpod: ^2.3.0  # For state management and dependency injection
   riverpod_annotation: ^2.3.0  # For cleaner Riverpod provider code
@@ -52,7 +52,19 @@ dependencies:
   logger: ^2.5.0
   permission_handler: ^12.0.0+1
   device_info_plus: ^10.1.0
-  http: ^1.4.0
+  http: ^0.13.6
+
+  # pdf_text: ^0.5.0
+  pdfx: ^2.6.0
+  # pdf: ^3.11.1 # Use pdf instead of pdf_text
+  flutter_tts: ^4.0.2
+  google_mlkit_text_recognition: ^0.15.0
+  syncfusion_flutter_pdf: ^29.2.7+1
+  flutter_pdf_text: ^0.9.0
+  webview_flutter: ^4.13.0
+  # flutter_pdfium: ^1.0.2
+  
+
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +74,7 @@ dev_dependencies:
 
 dependency_overrides:
   flutter_web_auth_2: ^4.1.0
+  http: ^0.13.6
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

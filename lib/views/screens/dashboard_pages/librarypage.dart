@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'package:smart_ebook/views/screens/dashboard_pages/pdfviewerpage.dart';
+
 import 'audioplaypage.dart';
-import 'pdfviewerpage.dart';
 import 'package:logger/logger.dart';
 
 class LibraryPage extends ConsumerWidget {
