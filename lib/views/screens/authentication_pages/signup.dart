@@ -123,73 +123,75 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(35, 8, 90, 1),
-      appBar: const CustomAppBar(),
-      body: Container(
-        padding: const EdgeInsets.only(left: 16, right: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: 25),
-              child: Text(
-                localizations.createNewAccount,
-                style: TextStyle(
-                  fontFamily: 'poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            CustomTextField(
-              hint: localizations.fullName,
-              controller: _nameController,
-            ),
-            CustomTextField(
-              hint: localizations.email,
-              controller: _emailController,
-            ),
-            PasswordTextfield(
-              controller: _passwordController,
-              hint: localizations.password,
-            ),
-            PasswordTextfield(
-              controller: _confirmPasswordController,
-              hint: localizations.confirmPassword,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 25,
-                bottom: 45,
-                right: 16,
-                left: 16,
-              ),
-              child: SizedBox(
-                width: 328,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
+    return SingleChildScrollView(
+      child: Scaffold(
+        backgroundColor: const Color.fromRGBO(35, 8, 90, 1),
+        appBar: const CustomAppBar(),
+        body: Container(
+          padding: const EdgeInsets.only(left: 16, right: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 25),
+                child: Text(
+                  localizations.createNewAccount,
+                  style: TextStyle(
+                    fontFamily: 'poppins',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.white,
                   ),
-                  onPressed: _validateAndSignUp,
-                  child:
-                      _isLoading
-                          ? CircularProgressIndicator()
-                          : Text(
-                            localizations.signUp,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'poppins',
-                            ),
-                          ),
                 ),
               ),
-            ),
-          ],
+              CustomTextField(
+                hint: localizations.fullName,
+                controller: _nameController,
+              ),
+              CustomTextField(
+                hint: localizations.email,
+                controller: _emailController,
+              ),
+              PasswordTextfield(
+                controller: _passwordController,
+                hint: localizations.password,
+              ),
+              PasswordTextfield(
+                controller: _confirmPasswordController,
+                hint: localizations.confirmPassword,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 25,
+                  bottom: 45,
+                  right: 16,
+                  left: 16,
+                ),
+                child: SizedBox(
+                  width: 328,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
+                    ),
+                    onPressed: _validateAndSignUp,
+                    child:
+                        _isLoading
+                            ? CircularProgressIndicator()
+                            : Text(
+                              localizations.signUp,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'poppins',
+                              ),
+                            ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
