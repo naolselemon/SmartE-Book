@@ -6,6 +6,7 @@ import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/profil
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/settings.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/librarypage.dart';
 
 class DrawerPage extends ConsumerWidget {
   const DrawerPage({super.key});
@@ -42,6 +43,10 @@ class DrawerPage extends ConsumerWidget {
             title: Text(localizations.library),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LibraryPage()),
+              );
             },
           ),
           ListTile(

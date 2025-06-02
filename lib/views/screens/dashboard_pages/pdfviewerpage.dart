@@ -26,6 +26,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   bool _isTtsPlaying = false;
   bool _isTtsPaused = false;
   bool _isLoadingText = false;
+  bool _isScannedPdf = false; // Flag to track if PDF is scanned
   String? _ttsError;
   String _extractedText = '';
   int _currentPage = 1;
@@ -41,11 +42,50 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     super.initState();
     _pdfDocumentFuture = pdfx.PdfDocument.openFile(widget.pdfPath);
     _pdfController = pdfx.PdfController(document: _pdfDocumentFuture);
+    _checkIfScannedPdf(); // Check if PDF is scanned
     _initializeTts();
-    _loadPdfText();
+    if (!_isScannedPdf) {
+      _loadPdfText(); // Load text only for text-based PDFs
+    }
+  }
+
+  Future<void> _checkIfScannedPdf() async {
+    try {
+      _logger.i('Checking if PDF is scanned: ${widget.pdfPath}');
+      final file = File(widget.pdfPath);
+      if (!await file.exists()) {
+        throw Exception('PDF file not found at ${widget.pdfPath}');
+      }
+
+      final pdfBytes = await file.readAsBytes();
+      final pdfDocument = PdfDocument(inputBytes: pdfBytes);
+      final textExtractor = PdfTextExtractor(pdfDocument);
+      final text = textExtractor.extractText(
+        startPageIndex: 0,
+        endPageIndex: 0,
+      );
+      pdfDocument.dispose();
+
+      setState(() {
+        _isScannedPdf = text.isEmpty; // If no text is extracted, assume scanned
+        _logger.i('PDF is ${_isScannedPdf ? "scanned" : "text-based"}');
+      });
+    } catch (e, stack) {
+      _logger.e('Failed to check PDF type: $e', stackTrace: stack);
+      setState(() {
+        _ttsError = 'Failed to check PDF type: $e';
+        _isScannedPdf = true; // Default to scanned on error to avoid crashes
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to check PDF type: $e')));
+      }
+    }
   }
 
   Future<void> _initializeTts() async {
+    if (_isScannedPdf) return; // Skip TTS initialization for scanned PDFs
     _logger.i('Initializing TTS');
     try {
       final availableLanguages = await _tts.getLanguages;
@@ -123,6 +163,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   }
 
   Future<void> _loadPdfText() async {
+    if (_isScannedPdf) return; // Skip text loading for scanned PDFs
     setState(() => _isLoadingText = true);
     try {
       _logger.i(
@@ -268,6 +309,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   }
 
   Future<void> _playTts() async {
+    if (_isScannedPdf) return; // Skip TTS for scanned PDFs
     if (_ttsError != null || _extractedText.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -291,6 +333,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   }
 
   Future<void> _pauseTts() async {
+    if (_isScannedPdf) return; // Skip TTS for scanned PDFs
     try {
       _logger.i('Pausing TTS');
       await _tts.pause();
@@ -305,6 +348,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   }
 
   Future<void> _stopTts() async {
+    if (_isScannedPdf) return; // Skip TTS for scanned PDFs
     try {
       _logger.i('Stopping TTS');
       await _tts.stop();
@@ -323,6 +367,25 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   }
 
   Future<void> _changePage(int page) async {
+    if (_isScannedPdf) {
+      // For scanned PDFs, only change the page without loading text
+      if (page < 1 || page > _totalPages) return;
+      setState(() => _currentPage = page);
+      try {
+        _pdfController.jumpToPage(page - 1);
+      } catch (e, stack) {
+        _logger.e('Failed to change page: $e', stackTrace: stack);
+        setState(() => _ttsError = 'Failed to load page $page: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to load page $page: $e')),
+          );
+        }
+      }
+      return;
+    }
+
+    // Existing logic for text-based PDFs
     if (page < 1 || page > _totalPages) return;
     await _stopTts();
     await Future.delayed(const Duration(seconds: 1));
@@ -345,8 +408,10 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   void dispose() {
     _logger.i('Disposing PDFViewerPage');
     _pdfController.dispose();
-    _tts.stop();
-    _textCache.clear();
+    if (!_isScannedPdf) {
+      _tts.stop();
+      _textCache.clear();
+    }
     _pdfDocumentFuture.then((doc) => doc.close()).catchError((e) {
       _logger.e('Failed to close PdfDocument: $e');
     });
@@ -358,30 +423,38 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [
-          Semantics(
-            label:
-                _isTtsPlaying && !_isTtsPaused
-                    ? 'Pause reading'
-                    : 'Play reading',
-            child: IconButton(
-              icon: Icon(
-                _isTtsPlaying && !_isTtsPaused ? Icons.pause : Icons.play_arrow,
-              ),
-              onPressed: _isTtsPlaying && !_isTtsPaused ? _pauseTts : _playTts,
-              tooltip:
-                  _isTtsPlaying && !_isTtsPaused ? 'Pause TTS' : 'Play TTS',
-            ),
-          ),
-          Semantics(
-            label: 'Stop reading',
-            child: IconButton(
-              icon: const Icon(Icons.stop),
-              onPressed: _stopTts,
-              tooltip: 'Stop TTS',
-            ),
-          ),
-        ],
+        actions:
+            _isScannedPdf
+                ? [] // No TTS controls for scanned PDFs
+                : [
+                  Semantics(
+                    label:
+                        _isTtsPlaying && !_isTtsPaused
+                            ? 'Pause reading'
+                            : 'Play reading',
+                    child: IconButton(
+                      icon: Icon(
+                        _isTtsPlaying && !_isTtsPaused
+                            ? Icons.pause
+                            : Icons.play_arrow,
+                      ),
+                      onPressed:
+                          _isTtsPlaying && !_isTtsPaused ? _pauseTts : _playTts,
+                      tooltip:
+                          _isTtsPlaying && !_isTtsPaused
+                              ? 'Pause TTS'
+                              : 'Play TTS',
+                    ),
+                  ),
+                  Semantics(
+                    label: 'Stop reading',
+                    child: IconButton(
+                      icon: const Icon(Icons.stop),
+                      onPressed: _stopTts,
+                      tooltip: 'Stop TTS',
+                    ),
+                  ),
+                ],
       ),
       body: Column(
         children: [
@@ -403,75 +476,78 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
               },
             ),
           ),
-          if (_isLoadingText)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+          if (!_isScannedPdf) ...[
+            // Existing UI elements for text-based PDFs
+            if (_isLoadingText)
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(width: 8),
+                    Text('Processing page...'),
+                  ],
+                ),
+              ),
+            if (_ttsError != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  _ttsError!,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 8),
-                  Text('Processing page...'),
+                  DropdownButton<String>(
+                    value: _language,
+                    items:
+                        ['en-US', 'es-ES', 'fr-FR']
+                            .map(
+                              (lang) => DropdownMenuItem(
+                                value: lang,
+                                child: Text(lang),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (value) async {
+                      setState(() => _language = value!);
+                      await _tts.setLanguage(value!);
+                    },
+                    hint: const Text('Select Language'),
+                  ),
+                  Slider(
+                    value: _speechRate,
+                    min: 0.1,
+                    max: 1.0,
+                    divisions: 9,
+                    label: 'Speed: ${_speechRate.toStringAsFixed(1)}',
+                    onChanged: (value) async {
+                      setState(() => _speechRate = value);
+                      await _tts.setSpeechRate(value);
+                    },
+                  ),
+                  Slider(
+                    value: _pitch,
+                    min: 0.5,
+                    max: 2.0,
+                    divisions: 15,
+                    label: 'Pitch: ${_pitch.toStringAsFixed(1)}',
+                    onChanged: (value) async {
+                      setState(() => _pitch = value);
+                      await _tts.setPitch(value);
+                    },
+                  ),
                 ],
               ),
             ),
-          if (_ttsError != null)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                _ttsError!,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                DropdownButton<String>(
-                  value: _language,
-                  items:
-                      ['en-US', 'es-ES', 'fr-FR']
-                          .map(
-                            (lang) => DropdownMenuItem(
-                              value: lang,
-                              child: Text(lang),
-                            ),
-                          )
-                          .toList(),
-                  onChanged: (value) async {
-                    setState(() => _language = value!);
-                    await _tts.setLanguage(value!);
-                  },
-                  hint: const Text('Select Language'),
-                ),
-                Slider(
-                  value: _speechRate,
-                  min: 0.1,
-                  max: 1.0,
-                  divisions: 9,
-                  label: 'Speed: ${_speechRate.toStringAsFixed(1)}',
-                  onChanged: (value) async {
-                    setState(() => _speechRate = value);
-                    await _tts.setSpeechRate(value);
-                  },
-                ),
-                Slider(
-                  value: _pitch,
-                  min: 0.5,
-                  max: 2.0,
-                  divisions: 15,
-                  label: 'Pitch: ${_pitch.toStringAsFixed(1)}',
-                  onChanged: (value) async {
-                    setState(() => _pitch = value);
-                    await _tts.setPitch(value);
-                  },
-                ),
-              ],
-            ),
-          ),
+          ],
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,

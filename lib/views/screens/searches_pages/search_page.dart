@@ -8,6 +8,7 @@ import 'package:smart_ebook/views/widgets/dashboard_widgets/bookdetailcontainer.
 import 'package:smart_ebook/views/widgets/searches_widgets/authors_images.dart';
 import 'package:smart_ebook/views/widgets/searches_widgets/categories_card.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -41,6 +42,7 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final searchResultsAsync = ref.watch(searchResultsProvider);
     final genresAsync = ref.watch(genresProvider);
     final authorsAsync = ref.watch(authorsProvider);
@@ -68,7 +70,7 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                     const SizedBox(height: 10),
                     SearchBar(
                       controller: _searchController,
-                      hintText: 'Search books by title, author, or genre',
+                      hintText: localizations.searchHint,
                       leading: const Icon(Icons.search),
                       shape: WidgetStateProperty.all(
                         RoundedRectangleBorder(
@@ -92,8 +94,8 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                           (genres) => Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Categories",
+                              Text(
+                                localizations.categories,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
@@ -124,8 +126,8 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                               Text('Error loading categories: $error'),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      "Famous Authors",
+                    Text(
+                      localizations.famousAuthors,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -158,8 +160,8 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                               Text('Error loading authors: $error'),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      "Trending Books",
+                    Text(
+                      localizations.trendingBooks,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -173,8 +175,8 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                           final trendingBooks =
                               books.where((b) => b.reviewCount >= 0).toList();
                           if (trendingBooks.isEmpty) {
-                            return const Center(
-                              child: Text('No trending books available'),
+                            return Center(
+                              child: Text(localizations.noTrendingBooks),
                             );
                           }
                           trendingBooks.sort(
@@ -233,10 +235,8 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                         data:
                             (books) =>
                                 books.isEmpty
-                                    ? const Center(
-                                      child: Text(
-                                        'No books found. Try a different search term.',
-                                      ),
+                                    ? Center(
+                                      child: Text(localizations.noBooksFound),
                                     )
                                     : ListView.builder(
                                       shrinkWrap: true,
@@ -385,7 +385,7 @@ class SearchScreenState extends ConsumerState<SearchScreen> {
                             (error, stack) => Center(
                               child: Text(
                                 error.toString().contains('fulltext index')
-                                    ? 'Search is currently unavailable. Please try again later.'
+                                    ? localizations.searchUnavailable
                                     : 'Error loading search results: $error',
                               ),
                             ),
