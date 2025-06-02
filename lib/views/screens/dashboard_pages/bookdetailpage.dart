@@ -9,6 +9,7 @@ import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookDetailPage extends ConsumerWidget {
   final String bookId;
@@ -38,6 +39,7 @@ class BookDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
     final logger = Logger();
     return DefaultTabController(
       length: 2,
@@ -90,9 +92,9 @@ class BookDetailPage extends ConsumerWidget {
                                 final profileState = ref.read(profileProvider);
                                 if (profileState.user == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
+                                    SnackBar(
                                       content: Text(
-                                        'Please log in to favorite a book',
+                                        localizations.loginToFavorite,
                                       ),
                                     ),
                                   );
@@ -150,7 +152,10 @@ class BookDetailPage extends ConsumerWidget {
               Container(
                 color: Colors.white,
                 child: TabBar(
-                  tabs: [Tab(text: "Description"), Tab(text: "Reviews")],
+                  tabs: [
+                    Tab(text: localizations.description),
+                    Tab(text: localizations.reviews),
+                  ],
                   labelColor: Colors.black,
                   unselectedLabelColor: Colors.grey,
                 ),
@@ -200,8 +205,8 @@ class BookDetailPage extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            const Text(
-                              "Summary",
+                            Text(
+                              localizations.summary,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 5),
@@ -209,8 +214,8 @@ class BookDetailPage extends ConsumerWidget {
                             const SizedBox(height: 10),
                             Text(
                               audioId.isNotEmpty || audioUrl.isNotEmpty
-                                  ? "Audio Available By The Author"
-                                  : "No Audio Available By The Author",
+                                  ? localizations.audioAvailable
+                                  : localizations.noAudioAvailable,
                               style: TextStyle(
                                 color:
                                     audioId.isNotEmpty || audioUrl.isNotEmpty
@@ -306,8 +311,9 @@ class BookDetailPage extends ConsumerWidget {
                                                           context,
                                                         ).showSnackBar(
                                                           SnackBar(
-                                                            content: const Text(
-                                                              'Please enable media permissions in app settings.',
+                                                            content: Text(
+                                                              localizations
+                                                                  .enableMediaPermissions,
                                                             ),
                                                             action: SnackBarAction(
                                                               label:
@@ -335,8 +341,9 @@ class BookDetailPage extends ConsumerWidget {
                                                           context,
                                                         ).showSnackBar(
                                                           SnackBar(
-                                                            content: const Text(
-                                                              'Please enable storage permissions in app settings.',
+                                                            content: Text(
+                                                              localizations
+                                                                  .enableStoragePermissions,
                                                             ),
                                                             action: SnackBarAction(
                                                               label:
@@ -364,8 +371,9 @@ class BookDetailPage extends ConsumerWidget {
                                                         context,
                                                       ).showSnackBar(
                                                         SnackBar(
-                                                          content: const Text(
-                                                            'Please enable file access in Settings.',
+                                                          content: Text(
+                                                            localizations
+                                                                .enableFileAccess,
                                                           ),
                                                           action: SnackBarAction(
                                                             label:
@@ -384,9 +392,10 @@ class BookDetailPage extends ConsumerWidget {
                                                     ScaffoldMessenger.of(
                                                       context,
                                                     ).showSnackBar(
-                                                      const SnackBar(
+                                                      SnackBar(
                                                         content: Text(
-                                                          'Permissions denied',
+                                                          localizations
+                                                              .permissionDenied,
                                                         ),
                                                       ),
                                                     );
@@ -405,7 +414,7 @@ class BookDetailPage extends ConsumerWidget {
                                                     builder:
                                                         (
                                                           context,
-                                                        ) => const AlertDialog(
+                                                        ) => AlertDialog(
                                                           content: Row(
                                                             children: [
                                                               CircularProgressIndicator(),
@@ -413,7 +422,8 @@ class BookDetailPage extends ConsumerWidget {
                                                                 width: 16,
                                                               ),
                                                               Text(
-                                                                'Downloading...',
+                                                                localizations
+                                                                    .downloading,
                                                               ),
                                                             ],
                                                           ),
@@ -512,9 +522,10 @@ class BookDetailPage extends ConsumerWidget {
                                                   ScaffoldMessenger.of(
                                                     context,
                                                   ).showSnackBar(
-                                                    const SnackBar(
+                                                    SnackBar(
                                                       content: Text(
-                                                        'Download completed',
+                                                        localizations
+                                                            .downloadCompleted,
                                                       ),
                                                     ),
                                                   );
@@ -541,8 +552,8 @@ class BookDetailPage extends ConsumerWidget {
                                       ),
                                       label: Text(
                                         allDownloaded
-                                            ? 'Downloaded'
-                                            : 'Download',
+                                            ? localizations.downloaded
+                                            : localizations.download,
                                       ),
                                     );
                                   },

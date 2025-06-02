@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ReviewsTab extends ConsumerStatefulWidget {
   final String bookId;
@@ -19,10 +20,11 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
   String _comment = '';
 
   void _submitReview() async {
+    final localizations = AppLocalizations.of(context)!;
     final profileState = ref.read(profileProvider);
     if (profileState.user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please log in to add a review')),
+        SnackBar(content: Text("Please log in to add a review")), //
       );
       return;
     }
@@ -41,9 +43,9 @@ class _ReviewsTabState extends ConsumerState<ReviewsTab> {
         _comment = '';
       });
       ref.invalidate(reviewsProvider(widget.bookId));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Review added successfully')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Review added successfully')));
     } catch (e) {
       ScaffoldMessenger.of(
         context,

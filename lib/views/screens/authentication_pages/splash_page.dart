@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_ebook/views/screens/authentication_pages/signin.dart';
 import 'package:smart_ebook/views/screens/authentication_pages/signup.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   runApp(const SplashPage());
@@ -11,6 +12,7 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -43,8 +45,8 @@ class SplashPage extends StatelessWidget {
                             MaterialPageRoute(builder: (ctx) => SignUpScreen()),
                           );
                         },
-                        child: const Text(
-                          "Get Started",
+                        child: Text(
+                          localizations.createNewAccount,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -70,8 +72,8 @@ class SplashPage extends StatelessWidget {
                             MaterialPageRoute(builder: (ctx) => SignIn()),
                           );
                         },
-                        child: const Text(
-                          "I have an account",
+                        child: Text(
+                          localizations.getStarted,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

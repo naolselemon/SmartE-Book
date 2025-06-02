@@ -5,6 +5,7 @@ import 'package:smart_ebook/views/screens/authentication_pages/app_bar.dart';
 import 'package:smart_ebook/views/screens/authentication_pages/signin.dart';
 import 'package:smart_ebook/views/widgets/authentication_widgets/password_textfield.dart';
 import 'package:smart_ebook/views/widgets/authentication_widgets/text_field.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,33 +26,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _hasNavigated = false;
 
   Future<void> _validateAndSignUp() async {
+    final localizations = AppLocalizations.of(context)!;
     // Clear any existing snackbars
     ScaffoldMessenger.of(context).clearSnackBars();
 
     // Input validation
     if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid email')),
+        SnackBar(
+          content: Text(localizations.invalidEmail),
+        ), // 'Please enter a valid email'
       );
       return;
     }
     if (_passwordController.text.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 8 characters')),
+        SnackBar(
+          content: Text(localizations.passwordTooShort),
+        ), // 'Password must be at least 8 characters'
       );
       return;
     }
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter your name')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizations.nameCannotBeEmpty)),
+      ); // 'Please enter your name'
       return;
     }
 
     if (_confirmPasswordController.text != _passwordController.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizations.passwordsDoNotMatch)),
+      ); // 'Passwords do not match'
       return;
     }
 
@@ -73,9 +79,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (!_hasNavigated) {
         _hasNavigated = true;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Sign-up successful!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localizations.signUpSuccessful)),
+        ); // 'Sign-up successful!'
 
         _clearForm();
 
@@ -116,6 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color.fromRGBO(35, 8, 90, 1),
       appBar: const CustomAppBar(),
@@ -124,10 +131,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(bottom: 25),
               child: Text(
-                "Create New Account",
+                localizations.createNewAccount,
                 style: TextStyle(
                   fontFamily: 'poppins',
                   fontWeight: FontWeight.w600,
@@ -136,15 +143,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            CustomTextField(hint: "Full Name", controller: _nameController),
-            CustomTextField(hint: "Email", controller: _emailController),
+            CustomTextField(
+              hint: localizations.fullName,
+              controller: _nameController,
+            ),
+            CustomTextField(
+              hint: localizations.email,
+              controller: _emailController,
+            ),
             PasswordTextfield(
               controller: _passwordController,
-              hint: "Password",
+              hint: localizations.password,
             ),
             PasswordTextfield(
               controller: _confirmPasswordController,
-              hint: "Confirm Password",
+              hint: localizations.confirmPassword,
             ),
             Padding(
               padding: const EdgeInsets.only(
@@ -165,7 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       _isLoading
                           ? CircularProgressIndicator()
                           : Text(
-                            "Sign Up",
+                            localizations.signUp,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -174,45 +187,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 108, left: 108),
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.,
-                children: [
-                  const Text(
-                    "or Sign up with",
-                    style: TextStyle(
-                      letterSpacing: 0.15,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'poppins',
-                      color: Color.fromRGBO(236, 227, 255, 1),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(0),
-                            ),
-                            child: Image.asset(
-                              'assets/images/google.png',
-                              height: 40,
-                              width: 40,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ),
           ],

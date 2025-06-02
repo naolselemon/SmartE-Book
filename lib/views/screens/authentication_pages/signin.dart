@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import "package:flutter_gen/gen_l10n/app_localizations.dart";
+
 import 'package:smart_ebook/view_models/auth_view_model.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
-
 import 'package:smart_ebook/views/screens/authentication_pages/app_bar.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/dashboard_page.dart';
 import 'package:smart_ebook/views/widgets/authentication_widgets/password_textfield.dart';
@@ -41,27 +42,30 @@ class _SignInState extends ConsumerState<SignIn> {
   }
 
   void _validateAndSignIn() async {
+    final localizations = AppLocalizations.of(context)!;
     // Clear any existing snackbars
     ScaffoldMessenger.of(context).clearSnackBars();
 
     // Input validation
     if (!_emailController.text.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid email')),
-      );
+        SnackBar(content: Text(localizations.invalidEmail)),
+      ); //enter valid email
       return;
     }
 
     if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter your email')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizations.enterEmail)),
+      ); //'Please enter your email'
       return;
     }
 
     if (_passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your password')),
+        SnackBar(
+          content: Text(localizations.enterPassword),
+        ), // 'Please enter your password'
       );
       return;
     }
@@ -98,7 +102,9 @@ class _SignInState extends ConsumerState<SignIn> {
         }
         _clearForm();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Center(child: Text('Sign-in successful!'))),
+          SnackBar(
+            content: Center(child: Text(localizations.signInSuccessful)),
+          ), //'Sign-in successful!'
         );
 
         Navigator.pushReplacement(
@@ -122,6 +128,7 @@ class _SignInState extends ConsumerState<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     // Check if the user is already signed in
     return FutureBuilder(
       future: ref.watch(profileProvider.notifier).isUserSignedIn(),
@@ -148,10 +155,10 @@ class _SignInState extends ConsumerState<SignIn> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(bottom: 25),
                   child: Text(
-                    "Sign In",
+                    localizations.signIn,
                     style: TextStyle(
                       fontFamily: 'poppins',
                       fontWeight: FontWeight.w600,
@@ -160,9 +167,12 @@ class _SignInState extends ConsumerState<SignIn> {
                     ),
                   ),
                 ),
-                CustomTextField(hint: "Email", controller: _emailController),
+                CustomTextField(
+                  hint: localizations.email,
+                  controller: _emailController,
+                ),
                 PasswordTextfield(
-                  hint: "Password",
+                  hint: localizations.password,
                   controller: _passwordController,
                 ),
                 Padding(
@@ -184,7 +194,7 @@ class _SignInState extends ConsumerState<SignIn> {
                           _isLoading
                               ? CircularProgressIndicator()
                               : Text(
-                                "Sign Up",
+                                localizations.signIn,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -193,45 +203,6 @@ class _SignInState extends ConsumerState<SignIn> {
                                 ),
                               ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 108, left: 108),
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.,
-                    children: [
-                      const Text(
-                        "or Sign up with",
-                        style: TextStyle(
-                          letterSpacing: 0.15,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'poppins',
-                          color: Color.fromRGBO(236, 227, 255, 1),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  shape: const CircleBorder(),
-                                  padding: const EdgeInsets.all(0),
-                                ),
-                                child: Image.asset(
-                                  'assets/images/google.png',
-                                  height: 40,
-                                  width: 40,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],

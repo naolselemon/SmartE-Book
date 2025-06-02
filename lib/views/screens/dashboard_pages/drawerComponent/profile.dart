@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -38,6 +39,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   Future<void> _pickImage() async {
+    final localizations = AppLocalizations.of(context)!;
     final picker = ImagePicker();
     final source = await showDialog<ImageSource>(
       context: context,
@@ -67,6 +69,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   Future<void> _saveChanges(ProfileState profileState) async {
+    final localizations = AppLocalizations.of(context)!;
     if (profileState.isLoading) return;
 
     final name = _nameController.text.trim();
@@ -76,31 +79,33 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     // Validation
     if (name.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Name cannot be empty')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizations.nameCannotBeEmpty)),
+      ); // 'Name cannot be empty'
       return;
     }
     if (email.isNotEmpty &&
         !RegExp(
           r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
         ).hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid email')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(localizations.invalidEmail)));
       return;
     }
     if (password.isNotEmpty || confirmPassword.isNotEmpty) {
       if (password != confirmPassword) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localizations.passwordsDoNotMatch)),
+        ); // 'Passwords do not match'
         return;
       }
       if (password.length < 8) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password must be at least 8 characters'),
+          SnackBar(
+            content: Text(
+              localizations.passwordTooShort,
+            ), // 'Password must be at least 8 characters'
           ),
         );
         return;
@@ -119,24 +124,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     final updatedState = ref.read(profileProvider);
     if (updatedState.error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(localizations.profileUpdated)));
       setState(() {
         _selectedImage = null;
         _passwordController.clear();
         _confirmPasswordController.clear();
       });
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${updatedState.error}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(localizations.errorPrefix + updatedState.error!),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(profileProvider);
+    final localizations = AppLocalizations.of(context)!;
 
     // Update controllers with user data when available
     if (profileState.user != null) {
@@ -146,7 +154,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile', style: TextStyle(color: Colors.white)),
+        title: Text(
+          localizations.profile,
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -154,13 +165,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             profileState.isLoading && profileState.user == null
                 ? const Center(child: CircularProgressIndicator())
                 : profileState.error != null
-                ? Center(child: Text('Error: ${profileState.error}'))
+                ? Center(
+                  child: Text(localizations.errorPrefix + profileState.error!),
+                )
                 : SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Update Profile',
+                      Text(
+                        localizations.updateProfile,
                         style: TextStyle(
                           fontFamily: 'poppins',
                           fontWeight: FontWeight.w600,
@@ -205,8 +218,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       // Name
                       TextField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
+                        decoration: InputDecoration(
+                          labelText: localizations.name,
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -214,8 +227,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       // Email
                       TextField(
                         controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
+                        decoration: InputDecoration(
+                          labelText: localizations.email,
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.emailAddress,
@@ -224,8 +237,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       // New Password
                       TextField(
                         controller: _passwordController,
-                        decoration: const InputDecoration(
-                          labelText: 'New Password (optional)',
+                        decoration: InputDecoration(
+                          labelText: localizations.newPassword,
                           border: OutlineInputBorder(),
                         ),
                         obscureText: true,
@@ -234,8 +247,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       // Confirm Password
                       TextField(
                         controller: _confirmPasswordController,
-                        decoration: const InputDecoration(
-                          labelText: 'Confirm New Password',
+                        decoration: InputDecoration(
+                          labelText: localizations.confirmPassword,
                           border: OutlineInputBorder(),
                         ),
                         obscureText: true,
@@ -257,7 +270,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                   ? const CircularProgressIndicator(
                                     color: Colors.white,
                                   )
-                                  : const Text('Save Changes'),
+                                  : Text(localizations.saveChanges),
                         ),
                       ),
                     ],

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'audioplaypage.dart';
 import 'pdfviewerpage.dart';
 import 'package:logger/logger.dart';
@@ -11,9 +13,9 @@ class LibraryPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
     final logger = Logger();
     return Scaffold(
-      appBar: AppBar(title: const Text("Library")),
       body: FutureBuilder<List<Book>>(
         future: ref.read(bookServicesProvider).getDownloadedBooks(),
         builder: (context, snapshot) {
@@ -25,7 +27,7 @@ class LibraryPage extends ConsumerWidget {
           }
           final books = snapshot.data ?? [];
           if (books.isEmpty) {
-            return const Center(child: Text("No downloaded books."));
+            return Center(child: Text(localizations.noDownloadedBooks));
           }
           return ListView.builder(
             itemCount: books.length,
@@ -41,10 +43,14 @@ class LibraryPage extends ConsumerWidget {
                           const Icon(Icons.broken_image),
                 ),
                 title: Text(
-                  book.title.isNotEmpty ? book.title : 'Unknown Title',
+                  book.title.isNotEmpty
+                      ? book.title
+                      : localizations.unknownTitle,
                 ),
                 subtitle: Text(
-                  book.author.isNotEmpty ? book.author : 'Unknown Author',
+                  book.author.isNotEmpty
+                      ? book.author
+                      : localizations.unknownAuthor,
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -68,7 +74,7 @@ class LibraryPage extends ConsumerWidget {
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('PDF not found')),
+                            SnackBar(content: Text(localizations.pdfNotFound)),
                           );
                         }
                       },
@@ -87,11 +93,9 @@ class LibraryPage extends ConsumerWidget {
                           String? audioPath = await ref
                               .read(bookServicesProvider)
                               .getLocalFilePath(audioFileId, 'mp4');
-                          if (audioPath == null) {
-                            audioPath = await ref
-                                .read(bookServicesProvider)
-                                .getLocalFilePath(audioFileId, 'mp3');
-                          }
+                          audioPath ??= await ref
+                              .read(bookServicesProvider)
+                              .getLocalFilePath(audioFileId, 'mp3');
                           if (audioPath != null) {
                             logger.i('Audio found: $audioPath');
                             Navigator.push(
@@ -109,7 +113,9 @@ class LibraryPage extends ConsumerWidget {
                           } else {
                             logger.w('Audio not found for $audioFileId');
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Audio not found')),
+                              SnackBar(
+                                content: Text(localizations.audioNotFound),
+                              ),
                             );
                           }
                         },

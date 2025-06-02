@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:smart_ebook/views/widgets/dashboard_widgets/bookdetailcontainer.dart';
 import 'package:smart_ebook/views/widgets/dashboard_widgets/sectiontitle.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: RefreshIndicator(
@@ -30,24 +32,24 @@ class HomePage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // All Books Section
-              const SectionTitle(title: 'All Books'),
-              _buildAllBooks(ref),
+              SectionTitle(title: localizations.allBooks),
+              _buildAllBooks(ref, context),
 
               // New Books Section
-              const SectionTitle(title: 'New', showViewAll: true),
-              _buildNewBooks(ref),
+              SectionTitle(title: localizations.newBooks, showViewAll: true),
+              _buildNewBooks(ref, context),
 
               // Trending Books Section
-              const SectionTitle(title: 'Trending Books'),
-              _buildTrendingBooks(ref),
+              SectionTitle(title: localizations.trendingBooks),
+              _buildTrendingBooks(ref, context),
 
               // Your Favourites Section
-              const SectionTitle(title: 'Your Favourites', showViewAll: true),
-              _buildFavoriteBooks(ref),
+              SectionTitle(title: localizations.yourFavourites),
+              _buildFavoriteBooks(ref, context),
 
               // Free Books Section
-              const SectionTitle(title: 'Free'),
-              _buildFreeBooks(ref),
+              SectionTitle(title: localizations.freeBooks),
+              _buildFreeBooks(ref, context),
             ],
           ),
         ),
@@ -55,7 +57,9 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildTrendingBooks(WidgetRef ref) {
+  Widget _buildTrendingBooks(WidgetRef ref, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     final booksWithRatingAsync = ref.watch(booksWithRatingProvider);
     return SizedBox(
       height: 180,
@@ -63,7 +67,7 @@ class HomePage extends ConsumerWidget {
         data: (books) {
           final trendingBooks = books.where((b) => b.reviewCount >= 0).toList();
           if (trendingBooks.isEmpty) {
-            return const Center(child: Text('No trending books available'));
+            return Center(child: Text(localizations.noTrendingBooks));
           }
           trendingBooks.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
           final displayBooks = trendingBooks.take(4).toList();
@@ -97,14 +101,15 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildFavoriteBooks(WidgetRef ref) {
+  Widget _buildFavoriteBooks(WidgetRef ref, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final favoriteBooksAsync = ref.watch(favoriteBooksWithRatingProvider);
     return SizedBox(
       height: 180,
       child: favoriteBooksAsync.when(
         data: (books) {
           if (books.isEmpty) {
-            return const Center(child: Text('No favorite books yet'));
+            return Center(child: Text(localizations.noFavoriteBooks));
           }
           return ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -136,14 +141,15 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildNewBooks(WidgetRef ref) {
+  Widget _buildNewBooks(WidgetRef ref, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final newBooksAsync = ref.watch(newBooksProvider);
     return SizedBox(
       height: 180,
       child: newBooksAsync.when(
         data: (books) {
           if (books.isEmpty) {
-            return const Center(child: Text('No new books available'));
+            return Center(child: Text(localizations.newBooks));
           }
           return ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -175,14 +181,15 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildFreeBooks(WidgetRef ref) {
+  Widget _buildFreeBooks(WidgetRef ref, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final freeBooksAsync = ref.watch(freeBooksProvider);
     return SizedBox(
       height: 180,
       child: freeBooksAsync.when(
         data: (books) {
           if (books.isEmpty) {
-            return const Center(child: Text('No free books available'));
+            return Center(child: Text(localizations.freeBooks));
           }
           return ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -214,14 +221,15 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildAllBooks(WidgetRef ref) {
+  Widget _buildAllBooks(WidgetRef ref, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final booksWithRatingAsync = ref.watch(booksWithRatingProvider);
     return SizedBox(
       height: 180,
       child: booksWithRatingAsync.when(
         data: (books) {
           if (books.isEmpty) {
-            return const Center(child: Text('No books available'));
+            return Center(child: Text(localizations.allBooks));
           }
           books.sort((a, b) => b.book.createdAt.compareTo(a.book.createdAt));
           final displayBooks = books.take(20).toList();

@@ -5,12 +5,14 @@ import 'package:smart_ebook/views/screens/authentication_pages/signin.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/profile.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/settings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DrawerPage extends ConsumerWidget {
   const DrawerPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localizations = AppLocalizations.of(context)!;
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -20,7 +22,7 @@ class DrawerPage extends ConsumerWidget {
               color: const Color.fromARGB(35, 8, 90, 1),
             ),
             child: Text(
-              'ReadLink',
+              localizations.appTitle,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -30,21 +32,21 @@ class DrawerPage extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.home),
-            title: const Text('Home'),
+            title: Text(localizations.home),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.library_books),
-            title: const Text('Library'),
+            title: Text(localizations.library),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.person),
-            title: const Text('Profile'),
+            title: Text(localizations.profile),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -56,7 +58,7 @@ class DrawerPage extends ConsumerWidget {
 
           ListTile(
             leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
+            title: Text(localizations.settingsTitle),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -68,12 +70,12 @@ class DrawerPage extends ConsumerWidget {
 
           ListTile(
             leading: const Icon(Icons.logout),
-            title: const Text('Sign Out'),
+            title: Text(localizations.signOut),
             onTap: () async {
               try {
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(const SnackBar(content: Text('Signing out...')));
+                ).showSnackBar(SnackBar(content: Text('Signing out...')));
                 await ref.read(profileProvider.notifier).signOut();
                 Navigator.pushReplacement(
                   context,

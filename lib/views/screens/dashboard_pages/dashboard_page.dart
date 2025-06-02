@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/librarypage.dart';
 import 'package:smart_ebook/views/screens/searches_pages/search_page.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'drawerpage.dart';
 import 'homepage.dart';
 
@@ -38,13 +38,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final profile = ref.watch(profileProvider);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(35, 8, 90, 1),
         title: Center(
-          child: Text('ReadLink', style: TextStyle(color: Colors.white)),
+          child: Text(
+            localizations.appTitle,
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         actions: [
           Padding(
@@ -66,12 +70,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: localizations.home,
+          ),
 
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: localizations.search,
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),
-            label: 'Library',
+            label: localizations.library,
           ),
         ],
       ),
