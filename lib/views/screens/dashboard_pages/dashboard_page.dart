@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/profile.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/library_page.dart';
@@ -25,6 +26,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     // Fetch user data after the widget tree is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(profileProvider.notifier).fetchUser();
+      ref.invalidate(favoriteBooksWithRatingProvider);
     });
   }
 

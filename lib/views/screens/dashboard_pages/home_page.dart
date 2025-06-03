@@ -52,8 +52,8 @@ class HomePage extends ConsumerWidget {
               _buildTrendingBooks(ref, context),
 
               // Your Favourites Section
-              SectionTitle(title: localizations.yourFavourites),
-              _buildFavoriteBooks(ref, context),
+              // SectionTitle(title: localizations.yourFavourites),
+              // _buildFavoriteBooks(ref, context),
 
               // Free Books Section
               SectionTitle(title: localizations.freeBooks),
@@ -156,46 +156,46 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildFavoriteBooks(WidgetRef ref, BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final favoriteBooksAsync = ref.watch(favoriteBooksWithRatingProvider);
-    return SizedBox(
-      height: 280,
-      child: favoriteBooksAsync.when(
-        data: (books) {
-          if (books.isEmpty) {
-            return Center(child: Text(localizations.noFavoriteBooks));
-          }
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: books.length,
-            itemBuilder: (context, index) {
-              final bookWithRating = books[index];
-              final book = bookWithRating.book;
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: BookDetailContainer(
-                  bookId: book.bookId,
-                  imagePath: book.coverPageUrl,
-                  title: book.title,
-                  author: book.author,
-                  rating: bookWithRating.rating,
-                  reviews: bookWithRating.reviewCount,
-                  summary: book.description,
-                  audioId: book.audioId,
-                  audioUrl: book.audioUrl,
-                  fileId: book.fileId,
-                  price: book.price,
-                ),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
-      ),
-    );
-  }
+  // Widget _buildFavoriteBooks(WidgetRef ref, BuildContext context) {
+  //   final localizations = AppLocalizations.of(context)!;
+  //   final favoriteBooksAsync = ref.watch(favoriteBooksWithRatingProvider);
+  //   return SizedBox(
+  //     height: 280,
+  //     child: favoriteBooksAsync.when(
+  //       data: (books) {
+  //         if (books.isEmpty) {
+  //           return Center(child: Text(localizations.noFavoriteBooks));
+  //         }
+  //         return ListView.builder(
+  //           scrollDirection: Axis.horizontal,
+  //           itemCount: books.length,
+  //           itemBuilder: (context, index) {
+  //             final bookWithRating = books[index];
+  //             final book = bookWithRating.book;
+  //             return Padding(
+  //               padding: const EdgeInsets.only(right: 10),
+  //               child: BookDetailContainer(
+  //                 bookId: book.bookId,
+  //                 imagePath: book.coverPageUrl,
+  //                 title: book.title,
+  //                 author: book.author,
+  //                 rating: bookWithRating.rating,
+  //                 reviews: bookWithRating.reviewCount,
+  //                 summary: book.description,
+  //                 audioId: book.audioId,
+  //                 audioUrl: book.audioUrl,
+  //                 fileId: book.fileId,
+  //                 price: book.price,
+  //               ),
+  //             );
+  //           },
+  //         );
+  //       },
+  //       loading: () => const Center(child: CircularProgressIndicator()),
+  //       error: (error, stack) => Center(child: Text('Error: $error')),
+  //     ),
+  //   );
+  // }
 
   Widget _buildNewBooks(WidgetRef ref, BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
