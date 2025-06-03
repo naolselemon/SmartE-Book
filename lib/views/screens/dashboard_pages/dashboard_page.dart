@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/drawerComponent/profile.dart';
 import 'package:smart_ebook/views/screens/dashboard_pages/library_page.dart';
 import 'package:smart_ebook/views/screens/searches_pages/search_page.dart';
 
@@ -57,12 +58,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         actions: [
           Padding(
             padding: EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundImage:
-                  profile.user?.profileImageUrl != null
-                      ? NetworkImage(profile.user!.profileImageUrl!)
-                      : AssetImage('assets/images/profile_picture.jpg'),
-              radius: 16,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+              child: CircleAvatar(
+                backgroundImage:
+                    profile.user?.profileImageUrl != null
+                        ? NetworkImage(profile.user!.profileImageUrl!)
+                        : AssetImage('assets/images/profile_picture.jpg'),
+                radius: 16,
+              ),
             ),
           ),
         ],
