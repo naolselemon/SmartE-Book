@@ -110,7 +110,12 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
         });
         if (_currentPage < _totalPages) {
           try {
-            _changePage(_currentPage + 1).then((_) => _playTts());
+            _changePage(_currentPage + 1).then((_) {
+              // Ensure UI is updated before starting TTS
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _playTts();
+              });
+            });
           } catch (e, stack) {
             _logger.e('Error in TTS completion: $e', stackTrace: stack);
             setState(() => _ttsError = 'Failed to process next page: $e');

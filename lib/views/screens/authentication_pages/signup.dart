@@ -5,7 +5,6 @@ import 'package:smart_ebook/views/screens/authentication_pages/app_bar.dart';
 import 'package:smart_ebook/views/screens/authentication_pages/signin.dart';
 import 'package:smart_ebook/views/widgets/authentication_widgets/password_textfield.dart';
 import 'package:smart_ebook/views/widgets/authentication_widgets/text_field.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -26,38 +25,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _hasNavigated = false;
 
   Future<void> _validateAndSignUp() async {
-    final localizations = AppLocalizations.of(context)!;
     // Clear any existing snackbars
     ScaffoldMessenger.of(context).clearSnackBars();
 
     // Input validation
     if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(localizations.invalidEmail),
-        ), // 'Please enter a valid email'
+        const SnackBar(content: Text('Please enter a valid email')),
       );
       return;
     }
     if (_passwordController.text.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(localizations.passwordTooShort),
-        ), // 'Password must be at least 8 characters'
+        const SnackBar(content: Text('Password must be at least 8 characters')),
       );
       return;
     }
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.nameCannotBeEmpty)),
-      ); // 'Please enter your name'
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter your name')));
       return;
     }
 
     if (_confirmPasswordController.text != _passwordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.passwordsDoNotMatch)),
-      ); // 'Passwords do not match'
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
 
@@ -79,9 +73,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (!_hasNavigated) {
         _hasNavigated = true;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(localizations.signUpSuccessful)),
-        ); // 'Sign-up successful!'
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Sign-up successful!')));
 
         _clearForm();
 
@@ -122,76 +116,67 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return SingleChildScrollView(
-      child: Scaffold(
-        backgroundColor: const Color.fromRGBO(35, 8, 90, 1),
-        appBar: const CustomAppBar(),
-        body: Container(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 25),
-                child: Text(
-                  localizations.createNewAccount,
-                  style: TextStyle(
-                    fontFamily: 'poppins',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: Colors.white,
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(35, 8, 90, 1),
+      appBar: const CustomAppBar(),
+      body: Container(
+        padding: const EdgeInsets.only(left: 16, right: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(bottom: 25),
+              child: Text(
+                "Create New Account",
+                style: TextStyle(
+                  fontFamily: 'poppins',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            CustomTextField(hint: "Full Name", controller: _nameController),
+            CustomTextField(hint: "Email", controller: _emailController),
+            PasswordTextfield(
+              controller: _passwordController,
+              hint: "Password",
+            ),
+            PasswordTextfield(
+              controller: _confirmPasswordController,
+              hint: "Confirm Password",
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 25,
+                bottom: 45,
+                right: 16,
+                left: 16,
+              ),
+              child: SizedBox(
+                width: 328,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
                   ),
-                ),
-              ),
-              CustomTextField(
-                hint: localizations.fullName,
-                controller: _nameController,
-              ),
-              CustomTextField(
-                hint: localizations.email,
-                controller: _emailController,
-              ),
-              PasswordTextfield(
-                controller: _passwordController,
-                hint: localizations.password,
-              ),
-              PasswordTextfield(
-                controller: _confirmPasswordController,
-                hint: localizations.confirmPassword,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 25,
-                  bottom: 45,
-                  right: 16,
-                  left: 16,
-                ),
-                child: SizedBox(
-                  width: 328,
-                  height: 48,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(157, 131, 210, 1),
-                    ),
-                    onPressed: _validateAndSignUp,
-                    child:
-                        _isLoading
-                            ? CircularProgressIndicator()
-                            : Text(
-                              localizations.signUp,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'poppins',
-                              ),
+                  onPressed: _validateAndSignUp,
+                  child:
+                      _isLoading
+                          ? CircularProgressIndicator()
+                          : Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'poppins',
                             ),
-                  ),
+                          ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

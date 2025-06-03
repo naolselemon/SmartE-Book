@@ -18,6 +18,7 @@ class LibraryPage extends ConsumerWidget {
     final localizations = AppLocalizations.of(context)!;
     final logger = Logger();
     return Scaffold(
+      appBar: AppBar(title: Text(localizations.library)),
       body: FutureBuilder<List<Book>>(
         future: ref.read(bookServicesProvider).getDownloadedBooks(),
         builder: (context, snapshot) {
