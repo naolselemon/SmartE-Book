@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
-import 'package:smart_ebook/views/screens/dashboard_pages/reviewspage.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/reviews_page.dart';
 import 'package:smart_ebook/views/providers/books_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';

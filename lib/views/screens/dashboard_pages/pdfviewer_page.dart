@@ -35,7 +35,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   double _pitch = 1.0;
   String _language = 'en-US';
   final Map<int, String> _textCache = {};
-  static const int _maxCacheSize = 20;
+  static const int _MAXCACHESIZE = 20;
 
   @override
   void initState() {
@@ -210,7 +210,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
         await _loadPdfTextWithOCR();
       }
 
-      if (_textCache.length > _maxCacheSize) {
+      if (_textCache.length > _MAXCACHESIZE) {
         _textCache.remove(_textCache.keys.first);
         _logger.i('Evicted oldest cache entry');
       }

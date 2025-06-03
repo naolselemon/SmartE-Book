@@ -3,7 +3,7 @@ import 'package:appwrite/models.dart' as appwrite_models;
 
 import 'package:logger/logger.dart';
 import 'package:smart_ebook/models/book.dart';
-import 'package:smart_ebook/models/bookwithrating.dart';
+import 'package:smart_ebook/models/book_with_rating.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

@@ -81,5 +81,7 @@
   "categories": "ምድቦች",
   "famousAuthors": "ታዋቂ ደራሲዎች",
   "noBooksFound": "መጽሐፍት አልተገኙም። የተለየ የፍለጋ ቃል ይሞክሩ።",
-  "searchUnavailable": "ፍለጋ ለአሁን አይገኝም። እባክዎ ቆይተው እንደገና ይሞክሩ።"
+  "searchUnavailable": "ፍለጋ ለአሁን አይገኝም። እባክዎ ቆይተው እንደገና ይሞክሩ።",
+  "recommendation": "ምክር",
+  "noRecommendation": "ምንም ምክሮች አይገኙም።"
 }

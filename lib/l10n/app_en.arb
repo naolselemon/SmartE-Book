@@ -80,5 +80,7 @@
   "categories": "Categories",
   "famousAuthors": "Famous Authors",
   "noBooksFound": "No books found. Try a different search term.",
-  "searchUnavailable": "Search is currently unavailable. Please try again later."
+  "searchUnavailable": "Search is currently unavailable. Please try again later.",
+  "recommendation": "Recommendation",
+  "noRecommendation": "No recommendations available"
 }

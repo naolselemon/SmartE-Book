@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_ebook/views/providers/user_provider.dart';
-import 'package:smart_ebook/views/screens/dashboard_pages/librarypage.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/library_page.dart';
 import 'package:smart_ebook/views/screens/searches_pages/search_page.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'drawerpage.dart';
-import 'homepage.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/drawer_page.dart';
+import 'package:smart_ebook/views/screens/dashboard_pages/home_page.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -28,7 +29,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [HomePage(), SearchScreen(), LibraryPage()];
+  List<Widget> _buildPages(String? userId) {
+    return [HomePage(userId: userId ?? ''), SearchScreen(), LibraryPage()];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,6 +43,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final profile = ref.watch(profileProvider);
+    final pages = _buildPages(profile.user?.id); // Get userId from profile
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +68,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
       drawer: DrawerPage(),
-      body: _pages[_selectedIndex],
+      body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.deepPurple,
         currentIndex: _selectedIndex,
@@ -79,6 +83,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             icon: Icon(Icons.search),
             label: localizations.search,
           ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),
             label: localizations.library,

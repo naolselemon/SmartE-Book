@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:smart_ebook/controllers/search_history_services.dart';
 import 'package:smart_ebook/controllers/search_service.dart';
 import 'package:smart_ebook/models/book.dart';
-import 'package:smart_ebook/models/bookwithrating.dart';
+import 'package:smart_ebook/models/book_with_rating.dart';
 
 import 'package:smart_ebook/views/providers/books_provider.dart';
 

@@ -7,7 +7,7 @@ import 'package:smart_ebook/models/book.dart';
 import 'package:smart_ebook/models/review.dart';
 
 import 'package:smart_ebook/views/providers/user_provider.dart';
-import 'package:smart_ebook/models/bookwithrating.dart';
+import 'package:smart_ebook/models/book_with_rating.dart';
 
 // Provider for Appwrite Client
 final appwriteClientProvider = Provider<Client>((ref) {

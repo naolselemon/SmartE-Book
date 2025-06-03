@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
 import 'package:smart_ebook/controllers/file_download_services.dart';
 import 'package:smart_ebook/models/book.dart';
-import 'package:smart_ebook/models/bookwithrating.dart';
+import 'package:smart_ebook/models/book_with_rating.dart';
 
 class BookServices {
   final Client _client;
