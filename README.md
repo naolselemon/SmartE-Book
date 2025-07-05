@@ -1,36 +1,35 @@
-# 📚 Smart Ebook - Flutter Application
+# 📚 Smart E-Book - AI Powered Mobile Application With Assistive Features for Visually Impaired Individuals
 
-**Smart Ebook** is a cross-platform Flutter application designed for an enhanced ebook reading experience. It features PDF support, audio playback, cloud sync via Appwrite, and a modern, customizable UI. Built with scalability and user accessibility in mind.
+**Smart Ebook** is a cross-platform mobile application designed for an enhanced ebook reading experience to address visually impaired individuals. It features PDF support, Machine Learning Model( google-mlkit-text-recognition) is used for text extraction, Gemini AI for user specific recommendation which is based on user behaviour or search history stored in the database.
 
 ---
 
 ## 🚀 Overview
 
-Smart Ebook is a Flutter-based mobile application for buying and reading ebooks with extended features such as:
+Smart Ebook is a  mobile application for buying and reading ebooks with extended features such as:
 
 - PDF viewing
+- AI based text extraction and audio generation
+- Integrated Gemini AI for recommendation
 - Audio playback
 - Appwrite cloud backend integration
 - Multi-language support
 - Secure local storage
 - Ratings and user engagement
+- Chapa Payment System
 
 ---
 
-## ✨ Features
-
-- 📖 **Ebook Reading** – Supports PDFs via [`pdfx`]
-- 🔊 **Audio Playback** – Listen to audio via [`audioplayers`]
-- ☁️ **Cloud Sync** – Integrated with Appwrite backend
-- 🎨 **Custom UI** – Beautiful interface using Google Fonts and Material Design
-- 📱 **Cross-platform** – Android and iOS support
-- 🌐 **Localization** – Multi-language support via `flutter_localizations`
-- 🔒 **Secure Storage** – Uses `shared_preferences` for local data
-- 📊 **Rating System** – Users can rate books
-- 📷 **Image Picker** – Select images using device gallery or camera
-- 📝 **Logging System** – Debug and runtime logs
-- 🔐 **Permission Handling** – Granular control of device features
-- 📱 **Device Info** – Collect and utilize device information
+##  Features
+-  **Text Extraction** – support text extraction via [`google-mlkit-text-recognition`] model
+-  **Recommendation** – Recommend users based on their search history via [`Gemini AI`] model
+-  **Ebook Reading** – Supports PDFs via [`pdfx`]
+-  **Audio Playback** – Listen to audio via [`audioplayers`]
+-  **Cloud Sync** – Integrated with Appwrite backend
+-  **Cross-platform** – Android and iOS support
+-  **Localization** – Multi-language support via `flutter_localizations`
+-  **Secure Storage** – Uses `shared_preferences` for local data
+-  **Rating System** – Users can rate books
 
 ---
 
@@ -39,30 +38,30 @@ Smart Ebook is a Flutter-based mobile application for buying and reading ebooks 
 ```
 .
 .
-assets/
+- assets/
 ├── fonts/
 ├── images/
 ├── audio/
 ```
 .
 .
-lib/
+- lib/
 ├── controller/
 │   ├── book_services.dart
 │   ├── file_download_services.dart
 │   ├── search_history_services.dart
 │   ├── search_service.dart
 │   ├── user_services.dart
-├── model/
+- ├── model/
 │   ├── book.dart
 │   ├── bookwithrating.dart
 │   ├── favorite.dart
 │   ├── review.dart
 │   ├── user.dart
-├── view_models/
+- ├── view_models/
 │   ├── auth_view_model.dart
 │   ├── book_view_model.dart
-├── views/
+- ├── views/
 │   ├── Providers/
 │   │   ├── books_provider.dart
 │   │   ├── search_providers.dart
@@ -90,7 +89,7 @@ lib/
 │   │   ├── searchpages/
 │   │   │   ├── search.dart
 │   │   │   ├── searchpage.dart
-├   ├── widgets/
+- ├   ├── widgets/
 │   │   ├── authentication_widgets/
 │   │   │   ├── password_textfield.dart
 │   │   │   ├── textfield.dart
@@ -122,7 +121,7 @@ lib/
 ### Setup Instructions
 
 ```bash
-git clone https://github.com/naolselemon/smart-ebook.git
+git clone https://github.com/naolselemon/SmartE-Book.git
 cd smart-ebook
 flutter pub get
 ```
@@ -140,13 +139,14 @@ flutter pub get
 
 ### Main Packages
 
+- `google-mlkit` – for text extraction and audio generation
+- `gemini 1.5 Model` –  for user specific recommendation
 - `flutter_riverpod` – State management
 - `appwrite` – Backend integration
 - `pdfx` – PDF rendering
 - `audioplayers` – Audio playback
 - `google_fonts` – Custom fonts
 - `flutter_dotenv` – Env config
-- `image_picker` – Media access
 - `shared_preferences` – Local storage
 - `permission_handler` – Permissions
 
@@ -190,6 +190,6 @@ Please follow best practices, test your changes, and submit PRs to the `develop`
 
 ## 🧰 Support
 
-For questions or issues, open an issue on [GitHub](https://github.com/naolselemon/smart-ebook/issues).
+For questions or issues, open an issue on [GitHub](https://github.com/naolselemon/SmartE-Book/issues).
 
 
